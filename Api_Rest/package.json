@@ -1,0 +1,28 @@
+{
+  "name": "dcc2048",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "description": "A basic 2048 game with DCC theme",
+  "main": "index.js",
+  "repository": "git@github.com:IIC2513-2022-2/dcc2048",
+  "author": "IIC2513-2022-2",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "yarn nodemon src/index.js"
+  },
+  "dependencies": {
+    "@koa/cors": "^3.4.1",
+    "dotenv": "^16.3.1",
+    "koa": "^2.13.4",
+    "koa-body": "^5.0.0",
+    "koa-logger": "^3.2.1",
+    "koa-router": "^12.0.0",
+    "pg": "^8.11.3",
+    "sequelize": "^6.32.1",
+    "sequelize-cli": "^6.6.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  }
+}
