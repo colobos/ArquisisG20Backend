@@ -9,7 +9,8 @@
   "license": "MIT",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "yarn nodemon src/index.js"
+    "dev": "yarn nodemon src/index.js",
+    "lint": "eslint . --ext .js"
   },
   "dependencies": {
     "@koa/cors": "^3.4.1",
@@ -23,6 +24,7 @@
     "sequelize-cli": "^6.6.1"
   },
   "devDependencies": {
+    "eslint": "^8.49.0",
     "nodemon": "^2.0.19"
   }
 }

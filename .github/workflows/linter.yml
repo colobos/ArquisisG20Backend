@@ -1,0 +1,27 @@
+name: Linter
+
+on:
+  pull_request:
+    branches: [develop]
+
+jobs:
+  build:
+    name: Lint Code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node Version
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Run Linter
+        run: yarn lint
