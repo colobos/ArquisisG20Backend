@@ -24,6 +24,7 @@ router.post('purchase', '/', async (ctx) => {
       location: loc,
     };
     console.log(purchaseData);
+    
 
     // TODO: Interact with DB here. Hay que crear el modelo de Purchase
 
