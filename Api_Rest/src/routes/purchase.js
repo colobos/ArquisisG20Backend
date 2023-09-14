@@ -18,6 +18,7 @@ router.post('purchase', '/', async (ctx) => {
       symbol: ctx.request.body.symbol,
       group_id: ctx.request.body.group_id,
       amount: ctx.request.body.amount,
+      date: ctx.request.body.date,
       country: country,
       city: city,
       location: loc,
