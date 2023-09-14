@@ -25,7 +25,9 @@ jobs:
         run: cd $GITHUB_WORKSPACE/Api_Rest  # Navigate to the repository directory
 
       - name: Install Dependencies
+        working-directory: $GITHUB_WORKSPACE/Api_Rest 
         run: yarn install
 
       - name: Run Linter
+        working-directory: $GITHUB_WORKSPACE/Api_Rest 
         run: yarn lint
