@@ -21,13 +21,9 @@ jobs:
         with:
           node-version: 18
           
-      - name: Change to Specific Directory
-        run: cd $GITHUB_WORKSPACE/Api_Rest  # Navigate to the repository directory
+      - name: Change to Specific Directory and run Linter
+        run: |
+          cd $GITHUB_WORKSPACE/Api_Rest  # Navigate to the repository directory
+          yarn install
+          yarn lint
 
-      - name: Install Dependencies
-        working-directory: $GITHUB_WORKSPACE
-        run: yarn install
-
-      - name: Run Linter
-        working-directory: $GITHUB_WORKSPACE
-        run: yarn lint
