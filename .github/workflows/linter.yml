@@ -22,7 +22,7 @@ jobs:
           
       - name: Change to Specific Directory
         working-directory: /Api_Rest
-        run: |
+        run: cd working-directory
           # You are now in the specified directory
           # Run any commands or scripts you need he
 
