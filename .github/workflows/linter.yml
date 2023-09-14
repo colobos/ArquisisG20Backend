@@ -21,10 +21,7 @@ jobs:
           node-version: 18
           
       - name: Change to Specific Directory
-        working-directory: /Api_Rest
-        run: cd working-directory
-          # You are now in the specified directory
-          # Run any commands or scripts you need he
+        run: cd $GITHUB_WORKSPACE/Api_Rest  # Navigate to the repository directory
 
       - name: Install Dependencies
         run: yarn install
