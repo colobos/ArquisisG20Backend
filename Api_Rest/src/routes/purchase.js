@@ -31,17 +31,12 @@ router.get('purchase.show', '/perfildata', async (ctx) => {
   }
 });
 
-
-// TODO: Endpoint to create a purchase
 router.post('purchase', '/', async (ctx) => {
   try {
-    // console.log(ctx.request.body);
     const geoLocationData = await getGeolocation(ctx.request.body.ip);
     const country = geoLocationData.country;
     const city = geoLocationData.city;
     const loc = geoLocationData.loc;
-
-    // Datos a insertar en BDD
     const purchase = await ctx.orm.Purchase.create({
       user_id: ctx.request.body.user_id,
       amount: ctx.request.body.amount,
@@ -52,10 +47,10 @@ router.post('purchase', '/', async (ctx) => {
       country: country,
       city: city,
       location: loc,
-    });		
-
-    console.log('Purchase:', purchase);
-
+    });
+    if (purchase) {
+      console.log('Purchase data:', purchase);
+    }
     ctx.body = { message: 'Compra creada con éxito' };
     ctx.status = 201;
   } catch (error) {
