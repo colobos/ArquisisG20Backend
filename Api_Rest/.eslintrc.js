@@ -27,6 +27,7 @@ module.exports = {
     'quotes': ['error', 'single'], // Use single quotes
     'prefer-const': 'error', // Prefer const over let
     'require-await': 'error', // Ensure async functions have await statements
+    'no-unused-vars': 'warn', // Generate a warning for unused variable
     // Add more linter rules
   }
 }
