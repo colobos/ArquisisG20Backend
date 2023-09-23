@@ -31,7 +31,11 @@ router.get('purchase.show', '/perfildata/:userId', async (ctx) => {
   }
 });
 
-
+function delay(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
 
 router.post('purchase', '/', async (ctx) => {
   try {
@@ -51,6 +55,8 @@ router.post('purchase', '/', async (ctx) => {
     //console.log(url)
     const responseMqtt = await axios.post(url, bodytosendMqtt)
     //console.log(responseMqtt.data, "response.data")
+    
+    await delay(500);
 
     const validation = await ctx.orm.Validation.findOne({
       attributes: [
@@ -86,6 +92,31 @@ router.post('purchase', '/', async (ctx) => {
           if (purchase) {
             console.log('Purchase data:', purchase);
           }
+
+
+          const userId = ctx.request.body.user_id;
+          const wallet = await ctx.orm.Wallet.findOne({
+            where: {
+              user_id: userId
+            }
+          });
+
+          const acction = await ctx.orm.Broker.findOne({
+            where: {
+              stocks_id: ctx.request.body.group_id,
+              stocks_symbol: ctx.request.body.symbol
+            }
+          });
+
+          var price = acction.stocks_price;
+          purchaseAmount = (parseFloat(price) * parseFloat(ctx.request.body.amount));
+    
+          if (wallet) {
+            const currentBalance = wallet.money;
+            var newBalance = parseFloat(currentBalance) - parseFloat(purchaseAmount);
+            await wallet.update({ money: newBalance });
+          }
+
           ctx.body = { message: 'Compra creada con éxito', validate: true};
         }
         else {
