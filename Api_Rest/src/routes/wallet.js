@@ -2,7 +2,7 @@ const Router = require('koa-router');
 const router = new Router();
 
 // Get all Wallets
-router.get('wallet.show', '/', async (ctx) => {
+router.get('wallet.show', '/all', async (ctx) => {
   try {
     const wallets = await ctx.orm.Wallet.findAll({
       attributes: [
@@ -58,8 +58,7 @@ router.post('wallet.create', '/:userId', async (ctx) => {
 // Update a Wallet
 router.patch('wallet.update', '/:userId', async (ctx) => {
   try {
-    const added_money = ctx.request.body.money;
-    console.log('Added money:', added_money)
+    var added_money = parseFloat(ctx.request.body.money);
     const wallet = await ctx.orm.Wallet.findOne({
       where: {
         user_id: ctx.params.userId
@@ -67,7 +66,7 @@ router.patch('wallet.update', '/:userId', async (ctx) => {
     });
     if (wallet) {
       console.log('Wallet data:', wallet);
-      const new_money = wallet.money + added_money;
+      var new_money = parseFloat(wallet.money) + parseFloat(added_money);
       await wallet.update({
         money: new_money
       });

@@ -2,11 +2,8 @@ const Router = require('koa-router');
 const { getGeolocation } = require('../helpers/geolocation');
 const router = new Router();
 
-router.get('purchase.show', '/perfildata', async (ctx) => {
+router.get('purchase.show', '/perfildata/:userId', async (ctx) => {
   try {
-    //Obtener el id de la sección...Auth0
-    // const session = await ctx.orm.sessions.findByPk(ctx.session.sessionid);
-    // const userid = session.userid;
 
     const historial = await ctx.orm.Purchase.findAll({
       attributes: [
@@ -19,10 +16,10 @@ router.get('purchase.show', '/perfildata', async (ctx) => {
         ['country', 'country'], 
         ['city', 'city'], 
         ['location', 'location']
-      ]//,
-      //where: {
-      //  user_id: userid
-      //}
+      ],
+      where: {
+        user_id: ctx.params.userId
+      }
     });
     ctx.body = historial;
   } catch (error) {
@@ -30,6 +27,8 @@ router.get('purchase.show', '/perfildata', async (ctx) => {
     ctx.throw(404);
   }
 });
+
+
 
 router.post('purchase', '/', async (ctx) => {
   try {
@@ -51,7 +50,8 @@ router.post('purchase', '/', async (ctx) => {
     if (purchase) {
       console.log('Purchase data:', purchase);
     }
-    ctx.body = { message: 'Compra creada con éxito' };
+    ctx.body = { message: 'Compra creada con éxito', 
+  validate: true};
     ctx.status = 201;
   } catch (error) {
     console.error('Error en la ruta POST:', error);
