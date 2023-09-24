@@ -72,6 +72,29 @@ router.patch('wallet.update', '/:userId', async (ctx) => {
       });
       ctx.body = { message: 'Wallet successfuly updated' };
     }
+
+    else {
+      const wallet2 = await ctx.orm.Wallet.create({
+        user_id: ctx.params.userId,
+        money: 0
+      });
+
+      const wallet = await ctx.orm.Wallet.findOne({
+        where: {
+          user_id: ctx.params.userId
+        }
+      });
+
+      if (wallet) {
+        console.log('Wallet data:', wallet);
+        var new_money = parseFloat(wallet.money) + parseFloat(added_money);
+        await wallet.update({
+          money: new_money
+        });
+        ctx.body = { message: 'Wallet successfuly updated' };
+      }
+    }
+
   } catch (error) {
     console.error('Error en la ruta PATCH:', error);
     ctx.throw = 500;

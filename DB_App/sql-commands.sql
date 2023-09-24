@@ -6,4 +6,14 @@ CREATE TABLE Purchase (id serial PRIMARY KEY, user_id varchar(255), amount int, 
 
 CREATE TABLE Wallet (id serial PRIMARY KEY, user_id varchar(255), money float, created_at DATE, updated_at DATE);
 
+CREATE TABLE Validation (
+  "id" SERIAL PRIMARY KEY,
+  "request_id" VARCHAR(255),
+  "group_id" VARCHAR(255),
+  "seller" FLOAT,
+  "valid" BOOLEAN,
+  "created_at" TIMESTAMP,
+  "updated_at" TIMESTAMP
+);
+
 */
