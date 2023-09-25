@@ -8,7 +8,7 @@ IP de la API: 3.143.165.103
 
 ## Diagrama UML
 
-El diagrama UML realizado se encuentra en la rama develop, en la carpeta docs/e1-uml-diagram.png
+El diagrama UML realizado se encuentra en la carpeta docs/e1-uml-diagram.png
 
 El sistema se basa en la autenticación a través de Auth0 y utiliza un Frontend desplegado en Amazon S3 para interactuar con los usuarios. El Frontend se comunica con CloudFront, que actúa como una capa de almacenamiento y distribución de contenido. Luego, se establece una comunicación con el Backend alojado en instancias de Amazon EC2.
 
@@ -21,7 +21,9 @@ Cuando se realizan solicitudes a la API Rest, esta puede acceder a la informaci�
 
 ## Pasos para reeplicar Pipeline de CI
 
-Los pasos para reeplicar el pipeline de CI utilizado se encuentran en la rama develop, en la carpeta docs/CI pipeline.pdf
+
+Los pasos para reeplicar el pipeline de CI utilizado se encuentran en la carpeta docs/CI pipeline.pdf
+
 
 ## Ejecutar la Aplicación en Local
 

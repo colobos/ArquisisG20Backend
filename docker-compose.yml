@@ -6,7 +6,7 @@ services: # The containers we are going to run
     container_name: app
     restart: unless-stopped
     volumes:
-      - ./Api_Rest/src:/Api_Rest/src # To copy changes in the local machine to the container.
+      - ./Api_Rest/src:/Api_Rest # To copy changes in the local machine to the container.
     ports:
       - "3000:3000" # To expose the app to the machine localhost (machine-port:container:port)
     networks:
