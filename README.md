@@ -10,7 +10,6 @@ IP de la API: 3.143.165.103
 
 El diagrama UML realizado se encuentra en la carpeta docs/e1-uml-diagram.png
 
-
 El sistema se basa en la autenticación a través de Auth0 y utiliza un Frontend desplegado en Amazon S3 para interactuar con los usuarios. El Frontend se comunica con CloudFront, que actúa como una capa de almacenamiento y distribución de contenido. Luego, se establece una comunicación con el Backend alojado en instancias de Amazon EC2.
 
 El API Gateway se encarga de gestionar las solicitudes entrantes y utiliza tokens JWT (JSON Web Tokens) para garantizar la seguridad de la comunicación. Cuando se recibe una solicitud en EC2, esta es intermediada por NGINX, que redirige la solicitud al puerto correspondiente en función de la ruta.
@@ -22,7 +21,9 @@ Cuando se realizan solicitudes a la API Rest, esta puede acceder a la informaci�
 
 ## Pasos para reeplicar Pipeline de CI
 
+
 Los pasos para reeplicar el pipeline de CI utilizado se encuentran en la carpeta docs/CI pipeline.pdf
+
 
 ## Ejecutar la Aplicación en Local
 
