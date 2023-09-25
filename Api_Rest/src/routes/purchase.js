@@ -1,12 +1,12 @@
+const axios = require('axios');
 const Router = require('koa-router');
 const { getGeolocation } = require('../helpers/geolocation');
 const router = new Router();
+const uuid = require('uuid');
 
-router.get('purchase.show', '/perfildata', async (ctx) => {
+
+router.get('purchase.show', '/perfildata/:userId', async (ctx) => {
   try {
-    //Obtener el id de la sección...Auth0
-    // const session = await ctx.orm.sessions.findByPk(ctx.session.sessionid);
-    // const userid = session.userid;
 
     const historial = await ctx.orm.Purchase.findAll({
       attributes: [
@@ -19,10 +19,10 @@ router.get('purchase.show', '/perfildata', async (ctx) => {
         ['country', 'country'], 
         ['city', 'city'], 
         ['location', 'location']
-      ]//,
-      //where: {
-      //  user_id: userid
-      //}
+      ],
+      where: {
+        user_id: ctx.params.userId
+      }
     });
     ctx.body = historial;
   } catch (error) {
@@ -31,28 +31,99 @@ router.get('purchase.show', '/perfildata', async (ctx) => {
   }
 });
 
+function delay(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms);
+  });
+}
+
 router.post('purchase', '/', async (ctx) => {
   try {
-    const geoLocationData = await getGeolocation(ctx.request.body.ip);
-    const country = geoLocationData.country;
-    const city = geoLocationData.city;
-    const loc = geoLocationData.loc;
-    const purchase = await ctx.orm.Purchase.create({
-      user_id: ctx.request.body.user_id,
-      amount: ctx.request.body.amount,
-      group_id: ctx.request.body.group_id,
-      datetime: ctx.request.body.datetime,
-      stocks_symbol: ctx.request.body.symbol,
-      stocks_shortname: ctx.request.body.shortname,
-      country: country,
-      city: city,
-      location: loc,
+
+    const requestId = uuid.v4();
+    const bodytosendMqtt = {
+      "request_id": requestId,
+      "group_id": "20",
+      "symbol": ctx.request.body.symbol,
+      "datetime": new Date().toISOString(),
+      "deposit_token": "",
+      "quantity": parseFloat(ctx.request.body.amount),
+      "seller": 0
+    };
+
+    const url = `http://app_listener:8000/request` 
+    //console.log(url)
+    const responseMqtt = await axios.post(url, bodytosendMqtt)
+    //console.log(responseMqtt.data, "response.data")
+    
+    await delay(500);
+
+    const validation = await ctx.orm.Validation.findOne({
+      attributes: [
+        ['request_id', 'request_id'], 
+        ['group_id', 'group_id'], 
+        ['seller', 'seller'], 
+        ['valid', 'valid'],
+      ],
+      where: {
+        request_id: requestId
+      }
     });
-    if (purchase) {
-      console.log('Purchase data:', purchase);
-    }
-    ctx.body = { message: 'Compra creada con éxito' };
-    ctx.status = 201;
+
+    if (validation) {
+      if (validation.valid == true)
+        {
+          const geoLocationData = await getGeolocation(ctx.request.body.ip);
+          const country = geoLocationData.country;
+          const city = geoLocationData.city;
+          const loc = geoLocationData.loc;
+          const purchase = await ctx.orm.Purchase.create({
+            user_id: ctx.request.body.user_id,
+            amount: ctx.request.body.amount,
+            group_id: ctx.request.body.group_id,
+            datetime: ctx.request.body.datetime,
+            stocks_symbol: ctx.request.body.symbol,
+            stocks_shortname: ctx.request.body.shortname,
+            country: country,
+            city: city,
+            location: loc,
+          });
+      
+          if (purchase) {
+            console.log('Purchase data:', purchase);
+          }
+
+
+          const userId = ctx.request.body.user_id;
+          const wallet = await ctx.orm.Wallet.findOne({
+            where: {
+              user_id: userId
+            }
+          });
+
+          const acction = await ctx.orm.Broker.findOne({
+            where: {
+              stocks_id: ctx.request.body.group_id,
+              stocks_symbol: ctx.request.body.symbol
+            }
+          });
+
+          var price = acction.stocks_price;
+          purchaseAmount = (parseFloat(price) * parseFloat(ctx.request.body.amount));
+    
+          if (wallet) {
+            const currentBalance = wallet.money;
+            var newBalance = parseFloat(currentBalance) - parseFloat(purchaseAmount);
+            await wallet.update({ money: newBalance });
+          }
+
+          ctx.body = { message: 'Compra creada con éxito', validate: true};
+        }
+        else {
+          ctx.body = { message: 'Compra no logró ser realizada', validate: false};
+        }
+      ctx.status = 201;
+      }
   } catch (error) {
     console.error('Error en la ruta POST:', error);
     ctx.throw = 500;
