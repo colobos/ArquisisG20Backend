@@ -75,3 +75,31 @@ POSTGRES_DB=nombre_db
 El archivo .env del Frontend para correr de forma local debe contener:
 REACT_APP_BACKEND_LOCAL_URL=http://localhost:3000/
 REACT_APP_BACKEND_ENV=local
+
+
+## Niveles de logro de la entrega.
+
+Se realizaron todos los puntos solicitados en el enunciado, a excepción del requisito RNF08, pues no se creó el Custom Authorizer en la API Gateway de tipo REST.
+
+#### Requisitos Funcionales (15p)
+##### ✅ RF01
+##### ✅ RF02
+##### ✅ RF03
+##### ✅ RF04
+##### ✅ RF05
+##### ✅ RF06
+##### ✅ RF07
+#### Requisitos No Funcionales (39p)
+##### ✅ RNF01
+##### ✅ RNF02
+##### ✅ RNF03
+##### ✅ RNF04
+##### ✅ RNF05
+##### ✅ RNF06
+##### ✅ RNF07
+##### ❌ RNF08
+##### ✅ RNF09
+#### Documentación (6p)
+##### ✅ RDOC01
+##### ✅ RDOC02
+##### ✅ RDOC03
