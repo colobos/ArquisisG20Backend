@@ -3,9 +3,6 @@ const Router = require('koa-router');
 const { getGeolocation } = require('../helpers/geolocation');
 const router = new Router();
 const uuid = require('uuid');
-const { WebpayPlus, Options, IntegrationCommerceCodes, 
-  IntegrationApiKeys, Environment } = require('transbank-sdk');
-
 
 router.get('purchase.show', '/perfildata/:userId', async (ctx) => {
   try {
@@ -41,22 +38,7 @@ function delay(ms) {
 
 router.post('purchase', '/', async (ctx) => {
   try {
-    // Adding Webpay logic here
-    console.log('developing Webpay implementation...');
-
-    const amount = ctx.request.body.amount
-    // const requestId = uuid.v4();
-
-    const tx = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration));
-    // usage: tx.create(buyOrder, sessionId, amount, returnUrl);
-    // no estoy seguro de que poner en butOrder y sessionId
     
-    const response = await tx.create('trx-id-g20', 'test-iic2173', amount, process.env?.REDIRECT_URL || 'http://localhost:8000');
-    console.log('response:', response);
-    
-    
-
-
     const requestId = uuid.v4();
     const bodytosendMqtt = {
       'request_id': requestId,
@@ -72,7 +54,7 @@ router.post('purchase', '/', async (ctx) => {
     //console.log(url)
     const responseMqtt = await axios.post(url, bodytosendMqtt)
     //console.log(responseMqtt.data, "response.data")
-    
+      
     await delay(500);
 
     const validation = await ctx.orm.Validation.findOne({
@@ -105,11 +87,6 @@ router.post('purchase', '/', async (ctx) => {
           city: city,
           location: loc,
         });
-      
-        // if (purchase) {
-        //   console.log('Purchase data:', purchase);
-        // }
-
 
         const userId = ctx.request.body.user_id;
         const wallet = await ctx.orm.Wallet.findOne({
@@ -127,7 +104,7 @@ router.post('purchase', '/', async (ctx) => {
 
         var price = acction.stocks_price;
         var purchaseAmount = (parseFloat(price) * parseFloat(ctx.request.body.amount));
-    
+      
         if (wallet) {
           const currentBalance = wallet.money;
           var newBalance = parseFloat(currentBalance) - parseFloat(purchaseAmount);
@@ -146,6 +123,7 @@ router.post('purchase', '/', async (ctx) => {
     ctx.throw = 500;
     ctx.body = { error: error.message };
   }
+
 });
 
 module.exports = router;
