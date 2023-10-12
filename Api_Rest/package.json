@@ -14,9 +14,8 @@
   },
   "dependencies": {
     "@koa/cors": "^3.4.1",
-    "uuid": "^3.4.0",
-    "dotenv": "^16.3.1",
     "axios": "^1.4.0",
+    "dotenv": "^16.3.1",
     "koa": "^2.13.4",
     "koa-body": "^5.0.0",
     "koa-logger": "^3.2.1",
@@ -24,7 +23,9 @@
     "node-ipinfo": "^3.4.4",
     "pg": "^8.11.3",
     "sequelize": "^6.32.1",
-    "sequelize-cli": "^6.6.1"
+    "sequelize-cli": "^6.6.1",
+    "transbank-sdk": "^4.0.0",
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
     "eslint": "^8.49.0",
