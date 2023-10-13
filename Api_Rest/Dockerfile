@@ -14,7 +14,8 @@ RUN yarn install
 # Copy all the files into the container to run the app
 COPY . .
 # Run command to start the process runing a shell command using node
-ENTRYPOINT [ "./start.sh" ]
+RUN npx sequelize-cli db:migrate
+CMD yarn dev
 
 # This is for documentation only, the port muyst be exposed manually or in compose definition.
 EXPOSE 3000

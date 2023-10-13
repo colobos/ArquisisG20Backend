@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
     country: DataTypes.STRING,
     city: DataTypes.STRING,
     location: DataTypes.STRING,
+    request_id: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Purchase',

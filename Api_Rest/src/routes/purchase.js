@@ -45,7 +45,7 @@ router.post('purchase', '/', async (ctx) => {
       'group_id': '20',
       'symbol': ctx.request.body.symbol,
       'datetime': new Date().toISOString(),
-      'deposit_token': '',
+      'deposit_token': requestId.toString(),
       'quantity': parseFloat(ctx.request.body.amount),
       'seller': 0
     };
@@ -86,6 +86,7 @@ router.post('purchase', '/', async (ctx) => {
           country: country,
           city: city,
           location: loc,
+          request_id: requestId.toString(),
         });
 
         const userId = ctx.request.body.user_id;
@@ -111,10 +112,10 @@ router.post('purchase', '/', async (ctx) => {
           await wallet.update({ money: newBalance });
         }
 
-        ctx.body = { message: 'Compra creada con éxito', validate: true};
+        ctx.body = { message: 'Compra creada con éxito', validate: true, purchase: purchase};
       }
       else {
-        ctx.body = { message: 'Compra no logró ser realizada', validate: false};
+        ctx.body = { message: 'Compra no logró ser realizada', validate: false, purchase: null};
       }
       ctx.status = 201;
     }
