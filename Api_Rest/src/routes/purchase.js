@@ -41,10 +41,8 @@ function delay(ms) {
 
 router.post('purchase', '/', async (ctx) => {
   try {
-
-    const requestId = uuid.v4();
     const bodytosendMqtt = {
-      'request_id': requestId,
+      'request_id': ctx.request.body.requestId,
       'group_id': '20',
       'symbol': ctx.request.body.symbol,
       'datetime': new Date().toISOString(),

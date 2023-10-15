@@ -3,33 +3,47 @@ const router = new Router();
 const { tx } = require('../utils/trx');
 const axios = require('axios');
 const { getGeolocation } = require('../helpers/geolocation');
+const uuid = require('uuid');
 
 
 router.post('webpay', '/request', async (ctx) => {
   try {
+    const request_id = uuid.v4();
     // receive purchase data intention from front-end
-    const request_id = ctx.request.body.request_id;
 
-    const purchaseData = await ctx.orm.Purchase.findOne({
-      attributes: [
-        ['user_id', 'user_id'],
-        ['amount', 'amount'],
-        ['group_id', 'group_id'],
-        ['datetime', 'datetime'],
-        ['stocks_symbol', 'symbol'],
-        ['stocks_shortname', 'shortName'],
-        ['country', 'country'],
-        ['city', 'city'],
-        ['location', 'location']
-      ],
+    const stock = await ctx.orm.Broker.findOne({
       where: {
-        request_id: request_id
-      }
+        stocks_symbol: ctx.request.body.symbol,
+        stocks_id: ctx.request.body.group_id,
+      },
     });
-    
+
+    const price = stock.stocks_price;
+
     const amount = ctx.request.body.amount;
-    const response = tx.create('trx-id-grupo20', request_id, amount, process.env?.REDIRECT_URL || 'http://localhost:3000');
+    const parsedAmount = parseInt(amount);
+    const value_to_pay = parsedAmount * parseInt(price);
+
+    
+    console.log('last Price of the Stock:', price);
+
+    console.log('Value:', value_to_pay);
+
+    const response = await tx.create('trx-id-grupo20', request_id, value_to_pay, process.env?.REDIRECT_URL || 'http://localhost:3000');
     console.log('response:', response);
+
+
+    const purchaseData = {
+      request_id: request_id,
+      group_id: ctx.request.body.group_id,
+      symbol: ctx.request.body.symbol,
+      shortname: ctx.request.body.shortname,
+      datetime: ctx.request.body.datetime,
+      quantity: ctx.request.body.amount,
+      price: value_to_pay,
+      ip: ctx.request.body.ip,
+      seller: 0,
+    };
 
     // response to front-end
     const WebpayData = {
