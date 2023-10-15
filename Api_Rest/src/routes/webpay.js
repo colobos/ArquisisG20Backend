@@ -50,9 +50,9 @@ const { WebpayPlus, Options, IntegrationCommerceCodes,
 //   }
 // });
 
-trxRouter.post('webpay', '/validation', async (ctx) => {
+router.post('webpay', '/validation', async (ctx) => {
   
-  const url = 'http://app_listener:8000/request' 
+  const url = 'http://app_listener:8000/validation' 
   //console.log(url)
 
   const { ws_token } = ctx.request.body;
@@ -83,10 +83,11 @@ trxRouter.post('webpay', '/validation', async (ctx) => {
     });
     ctx.body = {
       message: "Transaccion ha sido rechazada",
-      validation: trx,
+      validation: trx.valid,
 
     };
     ctx.status = 200;
+    const responseMqtt = await axios.post(url, trx)
     return;
   }
   const trx = await db.validation.create({
@@ -97,11 +98,13 @@ trxRouter.post('webpay', '/validation', async (ctx) => {
     valid: true
     
   });
-
-  ctx.status = 200;
   ctx.body = {
+    message: "Transaccion ha sido aceptada",
     validation: trx.valid,
   };
+
+  ctx.status = 200;
+  const responseMqtt = await axios.post(url, trx)
   return;
 });
 

@@ -101,6 +101,16 @@ router.post('/request', async (ctx) => {
   }
 });
 
+router.post('/validation', async (ctx) => {
+  try {
+    client.publish('stocks/validation', JSON.stringify(ctx.request.body));;
+    ctx.response.body = { message: 'Solicitud procesada correctamente' };
+  } catch (error) {
+    ctx.response.status = 500;
+    ctx.response.body = { error: 'Error en la solicitud' };
+  }
+});
+
 // Aplica el middleware de bodyParser
 app.use(bodyParser());
 app.use(cors());

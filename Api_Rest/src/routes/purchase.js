@@ -57,11 +57,13 @@ router.post('purchase', '/', async (ctx) => {
     //console.log(responseMqtt.data, "response.data")
 
     const amount = ctx.request.body.amount;
+    const price = ctx.request.body.price;
+    const value = parseInt(amount) * parseFloat(price);
     const tx = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration));
 
     // usage: tx.create(buyOrder, sessionId, amount, returnUrl);
     // no estoy seguro de que poner en butOrder y sessionId
-    const response = await tx.create('trx-id-grupo20', request_id, amount, process.env?.REDIRECT_URL || 'http://localhost:3000');
+    const response = await tx.create('trx-id-grupo20', request_id, value, process.env?.REDIRECT_URL || 'http://localhost:3000');
     console.log('response:', response);
 
     // response to front-end
