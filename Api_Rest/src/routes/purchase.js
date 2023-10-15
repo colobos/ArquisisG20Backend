@@ -3,6 +3,8 @@ const Router = require('koa-router');
 const { getGeolocation } = require('../helpers/geolocation');
 const router = new Router();
 const uuid = require('uuid');
+const { WebpayPlus, Options, IntegrationCommerceCodes, 
+  IntegrationApiKeys, Environment } = require('transbank-sdk');
 
 
 router.get('purchase.show', '/perfildata/:userId', async (ctx) => {
@@ -42,41 +44,23 @@ router.post('purchase', '/', async (ctx) => {
 
     const requestId = uuid.v4();
     const bodytosendMqtt = {
-      "request_id": requestId,
-      "group_id": "20",
-      "symbol": ctx.request.body.symbol,
-      "datetime": new Date().toISOString(),
-      "deposit_token": "",
-      "quantity": parseFloat(ctx.request.body.amount),
-      "seller": 0
+      'request_id': requestId,
+      'group_id': '20',
+      'symbol': ctx.request.body.symbol,
+      'datetime': new Date().toISOString(),
+      'deposit_token': ctx.request.body.deposit_token,
+      'quantity': parseFloat(ctx.request.body.amount),
+      'seller': 0
     };
 
-    const url = `http://app_listener:8000/request` 
-    //console.log(url)
+    const url = 'http://app_listener:8000/request' 
     const responseMqtt = await axios.post(url, bodytosendMqtt)
-    //console.log(responseMqtt.data, "response.data")
 
     const amount = ctx.request.body.amount;
     const price = ctx.request.body.price;
     const value = parseInt(amount) * parseFloat(price);
-    const tx = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration));
 
-    // usage: tx.create(buyOrder, sessionId, amount, returnUrl);
-    // no estoy seguro de que poner en butOrder y sessionId
-    const response = await tx.create('trx-id-grupo20', request_id, value, process.env?.REDIRECT_URL || 'http://localhost:3000');
-    console.log('response:', response);
-
-    // response to front-end
-    const WebpayData = {
-      url: response.url,
-      token: response.token,
-      purchaseData: purchaseData,
-    };
-    ctx.body = WebpayData;
     ctx.status = 200;
-    
-    
- 
   } catch (error) {
     console.error('Error en la ruta POST:', error);
     ctx.throw = 500;
