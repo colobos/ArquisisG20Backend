@@ -3,52 +3,52 @@ const router = new Router();
 const { WebpayPlus, Options, IntegrationCommerceCodes, 
   IntegrationApiKeys, Environment } = require('transbank-sdk');
 
-router.post('webpay', '/request', async (ctx) => {
-  try {
+// router.post('webpay', '/request', async (ctx) => {
+//   try {
     
-    // receive purchase data intention from front-end
-    const request_id = ctx.request.body.request_id;
+//     // receive purchase data intention from front-end
+//     const request_id = ctx.request.body.request_id;
 
-    const purchaseData = await ctx.orm.Purchase.findOne({
-      attributes: [
-        ['user_id', 'user_id'],
-        ['amount', 'amount'],
-        ['group_id', 'group_id'],
-        ['datetime', 'datetime'],
-        ['stocks_symbol', 'symbol'],
-        ['stocks_shortname', 'shortName'],
-        ['country', 'country'],
-        ['city', 'city'],
-        ['location', 'location']
-      ],
-      where: {
-        request_id: request_id
-      }
-    });
+//     const purchaseData = await ctx.orm.Purchase.findOne({
+//       attributes: [
+//         ['user_id', 'user_id'],
+//         ['amount', 'amount'],
+//         ['group_id', 'group_id'],
+//         ['datetime', 'datetime'],
+//         ['stocks_symbol', 'symbol'],
+//         ['stocks_shortname', 'shortName'],
+//         ['country', 'country'],
+//         ['city', 'city'],
+//         ['location', 'location']
+//       ],
+//       where: {
+//         request_id: request_id
+//       }
+//     });
     
-    const amount = ctx.request.body.amount;
-    const tx = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration));
+//     const amount = ctx.request.body.amount;
+//     const tx = new WebpayPlus.Transaction(new Options(IntegrationCommerceCodes.WEBPAY_PLUS, IntegrationApiKeys.WEBPAY, Environment.Integration));
 
-    // usage: tx.create(buyOrder, sessionId, amount, returnUrl);
-    // no estoy seguro de que poner en butOrder y sessionId
-    const response = await tx.create('trx-id-grupo20', request_id, amount, process.env?.REDIRECT_URL || 'http://localhost:8000');
-    console.log('response:', response);
+//     // usage: tx.create(buyOrder, sessionId, amount, returnUrl);
+//     // no estoy seguro de que poner en butOrder y sessionId
+//     const response = await tx.create('trx-id-grupo20', request_id, amount, process.env?.REDIRECT_URL || 'http://localhost:8000');
+//     console.log('response:', response);
 
-    // response to front-end
-    const WebpayData = {
-      url: response.url,
-      token: response.token,
-      purchaseData: purchaseData,
-    };
-    ctx.body = WebpayData;
-    ctx.status = 200;
+//     // response to front-end
+//     const WebpayData = {
+//       url: response.url,
+//       token: response.token,
+//       purchaseData: purchaseData,
+//     };
+//     ctx.body = WebpayData;
+//     ctx.status = 200;
 
-  } catch (error) {
-    console.error('Error en la ruta POST:', error);
-    ctx.throw = 500;
-    ctx.body = { error: error.message };
-  }
-});
+//   } catch (error) {
+//     console.error('Error en la ruta POST:', error);
+//     ctx.throw = 500;
+//     ctx.body = { error: error.message };
+//   }
+// });
 
 trxRouter.post('webpay', '/validation', async (ctx) => {
   
@@ -100,8 +100,7 @@ trxRouter.post('webpay', '/validation', async (ctx) => {
 
   ctx.status = 200;
   ctx.body = {
-    message: "Transaccion ha sido aceptada",
-    validation: trx,
+    validation: trx.valid,
   };
   return;
 });
