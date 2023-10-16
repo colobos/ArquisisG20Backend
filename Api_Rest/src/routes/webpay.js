@@ -29,7 +29,7 @@ router.post('webpay', '/request', async (ctx) => {
 
     console.log('Value:', value_to_pay);
 
-    const response = await tx.create('trx-id-grupo20', request_id, value_to_pay, process.env?.REDIRECT_URL || 'http://localhost:3000');
+    const response = await tx.create('trx-id-grupo20', request_id, value_to_pay, process.env?.REDIRECT_URL || 'http://localhost:3001/purchase-completed');
     console.log('response:', response);
 
 
@@ -66,7 +66,7 @@ router.post('webpay', '/validation', async (ctx) => {
   const url = 'http://app_listener:8000/validation' 
   //console.log(url)
 
-  const { ws_token } = ctx.request.body;
+  const { ws_token } = ctx.request.body.token;
   if (!ws_token || ws_token == '') {
     ctx.body = {
       message: 'Transaccion anulada por el usuario'
