@@ -10,8 +10,6 @@ const { WebpayPlus, Options, IntegrationCommerceCodes,
 router.get('purchase.show', '/perfildata/:userId', async (ctx) => {
   try {
 
-    //TODO: VALIDATE THE PURCHASES
-
     const historial = await ctx.orm.Purchase.findAll({
       attributes: [
         ['user_id', 'user_id'], 
