@@ -28,6 +28,7 @@ router.get('purchase.show', '/perfildata/:userId', async (ctx) => {
         user_id: ctx.params.userId
       }
     });
+
     ctx.body = historial;
   } catch (error) {
     console.log(error);
