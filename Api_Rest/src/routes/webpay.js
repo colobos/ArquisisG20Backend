@@ -33,17 +33,33 @@ router.post('webpay', '/request', async (ctx) => {
     console.log('response:', response);
 
 
+    const geoLocationData = await getGeolocation(ctx.request.body.ip);
+    const country = geoLocationData.country;
+    const city = geoLocationData.city;
+    const loc = geoLocationData.loc;
+
     const purchaseData = {
+      user_id: ctx.request.body.user_id,
+      amount: ctx.request.body.amount,
       request_id: request_id,
       group_id: ctx.request.body.group_id,
-      symbol: ctx.request.body.symbol,
-      shortname: ctx.request.body.shortname,
+      stocks_symbol: ctx.request.body.symbol,
+      stocks_shortname: ctx.request.body.shortname,
       datetime: ctx.request.body.datetime,
-      quantity: ctx.request.body.amount,
       price: value_to_pay,
-      ip: ctx.request.body.ip,
-      seller: 0,
+      country: country,
+      city: city,
+      location: loc,
+      deposit_token: response.token,
     };
+
+    const purchase = await ctx.orm.Purchase.create({
+      purchaseData,
+    });
+
+    if (purchase) {
+      console.log('Purchase created successfully data:', purchase);
+    }
 
     // response to front-end
     const WebpayData = {
@@ -51,6 +67,20 @@ router.post('webpay', '/request', async (ctx) => {
       token: response.token,
       purchaseData: purchaseData,
     };
+
+    // send purchase data to listener
+    const url = 'http://app_listener:8000/request'
+    const bodytosendMqtt = {
+      'request_id': ctx.request.body.requestId,
+      'group_id': '20',
+      'symbol': ctx.request.body.symbol,
+      'datetime': new Date().toISOString(),
+      'deposit_token': response.token,
+      'quantity': parseFloat(ctx.request.body.amount),
+      'seller': 0
+    };
+    const responseMqtt = await axios.post(url, bodytosendMqtt)
+
     ctx.body = WebpayData;
     ctx.status = 200;
 
@@ -64,10 +94,14 @@ router.post('webpay', '/request', async (ctx) => {
 
 router.post('webpay', '/validation', async (ctx) => {
   const url = 'http://app_listener:8000/validation' 
-  //console.log(url)
 
-  const { ws_token } = ctx.request.body.token;
+  console.log('body:', ctx.request.body);
+
+  const ws_token  = ctx.request.body.token;
+  console.log('ws_token:', ws_token)
+
   if (!ws_token || ws_token == '') {
+    console.log('token vacio o no encontrado');
     ctx.body = {
       message: 'Transaccion anulada por el usuario'
     };
@@ -84,8 +118,12 @@ router.post('webpay', '/validation', async (ctx) => {
 
   const confirmedTx = await tx.commit(ws_token);
 
+  console.log('confirmedTx:', confirmedTx);
+
+  let valid = true;
   if (confirmedTx.response_code != 0) { 
     // Rechaza la compra
+    valid = false;
     ctx.body = {
       message: 'Transaccion ha sido rechazada',
       validation: tx.valid,
@@ -95,25 +133,27 @@ router.post('webpay', '/validation', async (ctx) => {
     return;
   }
 
-  // Acepta la compra
-  const geoLocationData = await getGeolocation(ctx.request.body.ip);
-  const country = geoLocationData.country;
-  const city = geoLocationData.city;
-  const loc = geoLocationData.loc;
-  const purchase = await ctx.orm.Purchase.create({
-    user_id: ctx.request.body.user_id,
-    amount: ctx.request.body.amount,
-    group_id: ctx.request.body.group_id,
-    datetime: ctx.request.body.datetime,
-    stocks_symbol: ctx.request.body.symbol,
-    stocks_shortname: ctx.request.body.shortname,
-    country: country,
-    city: city,
-    location: loc,
+  const purchaseData = await ctx.orm.Purchase.findOne({
+    where: {
+      deposit_token: ctx.request.body.token,
+    },
   });
 
-  if (purchase) {
-    console.log('Purchase data:', purchase);
+
+  // Save on validations the purchase
+  const validationData = {
+    request_id: ctx.request.body.request_id,
+    group_id: ctx.request.body.group_id,
+    seller: 0,
+    valid: valid,
+  };
+
+  const validationObject = await ctx.orm.Validation.create({
+    validationData,
+  });
+
+  if (validationObject) {
+    console.log('Validation created successfully data:', validationObject);
   }
 
   ctx.body = {

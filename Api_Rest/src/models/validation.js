@@ -16,8 +16,6 @@ module.exports = (sequelize, DataTypes) => {
 
   Validation.init({
     request_id: DataTypes.STRING,
-    group_id: DataTypes.STRING,
-    seller: DataTypes.FLOAT,
     valid: DataTypes.BOOLEAN,
   }, {
     sequelize,

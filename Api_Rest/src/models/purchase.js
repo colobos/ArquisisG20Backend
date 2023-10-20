@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     city: DataTypes.STRING,
     location: DataTypes.STRING,
     request_id: DataTypes.STRING,
+    deposit_token: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Purchase',
