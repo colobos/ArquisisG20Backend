@@ -104,12 +104,14 @@ router.post('webpay', '/request', async (ctx) => {
 
 
 router.post('webpay', '/validation', async (ctx) => {
+  
   const url = 'http://app_listener:8000/validation' 
-
   console.log('body:', ctx.request.body);
   const ws_token  = ctx.request.body.token;
-  let valid = true;
+  let valid = false;
+  let message = '';
 
+  // Caso 1 - Tansacción anulada por el usuario
   if (!ws_token || ws_token == '') {
     console.log('token vacio o no encontrado');
     ctx.body = {
@@ -123,51 +125,42 @@ router.post('webpay', '/validation', async (ctx) => {
       'valid': valid
     };
   
-    const responseMqtt = await axios.post(url, brokerMsg);
+    // const responseMqtt = await axios.post(url, brokerMsg);
     console.log('responseMqtt without token:', responseMqtt);
     ctx.status = 200;
     return;
   }
 
-  const confirmedTx = await tx.commit(ws_token);
-  console.log('confirmedTx:', confirmedTx);
-
-  if (confirmedTx.response_code != 0) { 
-    // Rechaza la compra
-    valid = false;
-    ctx.body = {
-      message: 'Transaccion ha sido rechazada',
-      validation: tx.valid,
-    };
-    ctx.status = 500;
-    const responseMqtt = await axios.post(url, tx)
-    return;
-  }
-
+  // Buscamos la información de la compra
   const purchaseData = await ctx.orm.Purchase.findOne({
     where: {
       deposit_token: ctx.request.body.token,
     },
   });
 
-  console.log('purchaseData found on Database:', purchaseData);
+  // Validamos la compra con la api de webpay
+  const confirmedTx = await tx.commit(ws_token);
+  console.log('confirmedTx:', confirmedTx);
 
-  // save a validation object on the database
+  // Caso 2 - Tansacción rechazada
+  if (confirmedTx.response_code != 0) { 
+    // Rechaza la compra
+    valid = false;
+    message: 'Transaccion ha sido rechazada'
+  }
+
+  // Caso 3 - Tansacción aceptada
+  if (confirmedTx.response_code == 0) {
+    valid = true;
+    message: 'Transaccion ha sido aceptada'
+  }
+
+  // Guardar validación en la base de datos
   const validationObject = await ctx.orm.Validation.create({
     request_id: purchaseData.request_id,
     valid: valid
   });
 
-  if (validationObject) {
-    console.log('Validation created successfully data:', validationObject);
-  }
-
-  ctx.body = {
-    message: 'Transaccion ha sido aceptada',
-    validation: tx.valid,
-  };
-  ctx.status = 201;
-  
   const brokerMsg = {
     'request_id': purchaseData.request_id,
     'group_id': purchaseData.group_id,
@@ -177,6 +170,13 @@ router.post('webpay', '/validation', async (ctx) => {
 
   const responseMqtt = await axios.post(url, brokerMsg);
   console.log('responseMqtt:', responseMqtt);
+  
+  ctx.body = {
+    message: message,
+    validation: valid,
+    purchaseData: purchaseData,
+  };
+  ctx.status = 201;
 
   return;
 });

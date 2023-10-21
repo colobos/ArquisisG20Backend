@@ -103,6 +103,7 @@ router.post('/request', async (ctx) => {
 
 router.post('/validation', async (ctx) => {
   try {
+    console.log('body:', ctx.request.body);
     client.publish('stocks/validation', JSON.stringify(ctx.request.body));;
     ctx.response.body = { message: 'Solicitud procesada correctamente' };
   } catch (error) {

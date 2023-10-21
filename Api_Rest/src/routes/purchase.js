@@ -10,26 +10,39 @@ const { WebpayPlus, Options, IntegrationCommerceCodes,
 router.get('purchase.show', '/perfildata/:userId', async (ctx) => {
   try {
 
-    //TODO: VALIDATE THE PURCHASES
-
     const historial = await ctx.orm.Purchase.findAll({
       attributes: [
-        ['user_id', 'user_id'], 
-        ['amount', 'amount'], 
-        ['group_id', 'group_id'], 
-        ['datetime', 'datetime'], 
-        ['stocks_symbol', 'symbol'], 
+        ['user_id', 'user_id'],
+        ['amount', 'amount'],
+        ['group_id', 'group_id'],
+        ['datetime', 'datetime'],
+        ['stocks_symbol', 'symbol'],
         ['stocks_shortname', 'shortName'],
-        ['country', 'country'], 
-        ['city', 'city'], 
+        ['country', 'country'],
+        ['city', 'city'],
         ['location', 'location']
       ],
       where: {
-        user_id: ctx.params.userId
+        user_id: `${parseInt(ctx.params.userId)}`
       }
     });
 
-    ctx.body = historial;
+    const validations = await ctx.orm.Validation.findAll({
+      where: {
+        request_id: historial.map((item) => item.dataValues.request_id)
+      }
+    });
+    console.log(validations);
+    const historialWithValidations = historial.map((item) => {
+      const validation = validations.find((validation) => validation.request_id === item.dataValues.request_id);
+      return {
+        ...item.dataValues,
+        valid: validation.valid
+      }
+    });
+    console.log(historialWithValidations);
+
+    ctx.body = historialWithValidations;
   } catch (error) {
     console.log(error);
     ctx.throw(404);
