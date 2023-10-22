@@ -146,13 +146,13 @@ router.post('webpay', '/validation', async (ctx) => {
   if (confirmedTx.response_code != 0) { 
     // Rechaza la compra
     valid = false;
-    message: 'Transaccion ha sido rechazada'
+    message = 'Transaccion ha sido rechazada';
   }
 
   // Caso 3 - Tansacción aceptada
   if (confirmedTx.response_code == 0) {
     valid = true;
-    message: 'Transaccion ha sido aceptada'
+    message = 'Transaccion ha sido aceptada';
   }
 
   // Guardar validación en la base de datos

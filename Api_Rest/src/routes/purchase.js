@@ -20,12 +20,14 @@ router.get('purchase.show', '/perfildata/:userId', async (ctx) => {
         ['stocks_shortname', 'shortName'],
         ['country', 'country'],
         ['city', 'city'],
-        ['location', 'location']
+        ['location', 'location'],
+        ['request_id', 'request_id']
       ],
       where: {
-        user_id: `${parseInt(ctx.params.userId)}`
+        user_id: ctx.params.userId
       }
     });
+    console.log(historial);
 
     const validations = await ctx.orm.Validation.findAll({
       where: {
