@@ -87,6 +87,7 @@ router.patch('wallet.update', '/:userId', async (ctx) => {
 
       if (wallet) {
         console.log('Wallet data:', wallet);
+        // eslint-disable-next-line no-redeclare
         var new_money = parseFloat(wallet.money) + parseFloat(added_money);
         await wallet.update({
           money: new_money

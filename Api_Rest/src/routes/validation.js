@@ -24,13 +24,13 @@ router.post('validation', '/', async (ctx) => {
     const formattedData = ctx.request.body.formattedData;
 
     if (formattedData.group_id == 20) {
-        const validation = await ctx.orm.Validation.create({
-            request_id: formattedData.request_id,
-            group_id: formattedData.group_id,
-            seller: formattedData.seller,
-            valid: formattedData.valid,
-        });			
-        console.log(validation);
+      const validation = await ctx.orm.Validation.create({
+        request_id: formattedData.request_id,
+        group_id: formattedData.group_id,
+        seller: formattedData.seller,
+        valid: formattedData.valid,
+      });			
+      console.log(validation);
     }
 
 
