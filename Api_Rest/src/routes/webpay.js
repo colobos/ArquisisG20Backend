@@ -5,6 +5,7 @@ const axios = require('axios');
 const { getGeolocation } = require('../helpers/geolocation');
 const uuid = require('uuid');
 const { getAuth0Data } = require('../helpers/getAuth0Data');
+const { sendEmail } = require('../helpers/sendEmail');
 
 
 router.post('webpay', '/request', async (ctx) => {
@@ -163,14 +164,13 @@ router.post('webpay', '/validation', async (ctx) => {
 
   // Enviar validación de compra por email al user
   if (valid) {
-    console.log('send email to user');
-    // send email to user
     const authHeader = ctx.request.headers['authorization'];
     const auth0Token = authHeader && authHeader.split(' ')[1];
     const auth0UserData = await getAuth0Data(auth0Token);
     const userEmail = auth0UserData.email;
     console.log('userEmail:', userEmail);
-
+    const msg = `Su compra de ${purchaseData.stocks_symbol} se ha realizado con éxito. Puedes ver los detalles en el historial de acciones compradas.`
+    await sendEmail(userEmail, 'Compra de acciones validada', msg);
 
   }
 
