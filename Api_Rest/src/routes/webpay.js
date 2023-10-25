@@ -4,6 +4,8 @@ const { tx } = require('../utils/trx');
 const axios = require('axios');
 const { getGeolocation } = require('../helpers/geolocation');
 const uuid = require('uuid');
+const { getAuth0Data } = require('../helpers/getAuth0Data');
+const { sendEmail } = require('../helpers/sendEmail');
 
 
 router.post('webpay', '/request', async (ctx) => {
@@ -24,9 +26,7 @@ router.post('webpay', '/request', async (ctx) => {
     const parsedAmount = parseInt(amount);
     const value_to_pay = parsedAmount * parseInt(price);
 
-    
     console.log('last Price of the Stock:', price);
-
     console.log('Value:', value_to_pay);
 
     const response = await tx.create('trx-id-grupo20', request_id, value_to_pay, process.env?.REDIRECT_URL || 'http://localhost:3001/purchase-completed');
@@ -161,6 +161,22 @@ router.post('webpay', '/validation', async (ctx) => {
     valid: valid
   });
 
+
+  // Enviar validación de compra por email al user
+  if (valid) {
+    const authHeader = ctx.request.headers['authorization'];
+    const auth0Token = authHeader && authHeader.split(' ')[1];
+    const auth0UserData = await getAuth0Data(auth0Token);
+    const userEmail = auth0UserData.email;
+    console.log('userEmail:', userEmail);
+    const msg = `Su compra de ${purchaseData.stocks_symbol} se ha realizado con éxito. Puedes ver los detalles en el historial de acciones compradas.`
+    await sendEmail(userEmail, 'Compra de acciones validada', msg);
+
+  }
+
+
+
+  // Enviar validación a listener
   const brokerMsg = {
     'request_id': purchaseData.request_id,
     'group_id': purchaseData.group_id,
