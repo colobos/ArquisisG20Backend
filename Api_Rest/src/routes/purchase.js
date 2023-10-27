@@ -39,7 +39,6 @@ router.get('purchase.show', '/perfildata/:userId', async (ctx) => {
       const validation = validations.find((validation) => validation.request_id === item.dataValues.request_id);
       return {
         ...item.dataValues,
-        valid: validation.valid
       }
     });
     console.log(historialWithValidations);
@@ -56,6 +55,37 @@ function delay(ms) {
     setTimeout(resolve, ms);
   });
 }
+
+router.post('purchase', '/', async (ctx) => {
+  try {
+    const formattedData = ctx.request.body.formattedData;
+    console.log(formattedData);
+    console.log(ctx.request)
+
+    const purchase = await ctx.orm.Purchase.create({
+      amount: formattedData.quantity,
+      request_id: formattedData.request_id,
+      group_id: formattedData.group_id,
+      stocks_symbol: formattedData.symbol,
+      stocks_shortname: formattedData.shortname,
+      datetime: formattedData.datetime,
+      deposit_token: formattedData.deposit_token,
+    });	
+
+    if (purchase) {
+      console.log('Purchase created successfully data:', purchase);
+    }
+
+    // Envía una respuesta
+    ctx.body = { message: 'Datos recibidos exitosamente' };
+  } catch (error) {
+    console.error('Error en la ruta POST:', error);
+    ctx.status = 500;
+    ctx.body = { error: 'Error en el servidor' };
+  }
+});
+
+/*
 
 router.post('purchase', '/', async (ctx) => {
   try {
@@ -83,6 +113,7 @@ router.post('purchase', '/', async (ctx) => {
     ctx.body = { error: error.message };
   }
 });
+*/
 
 
 

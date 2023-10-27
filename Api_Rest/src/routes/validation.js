@@ -6,8 +6,6 @@ router.get('validations.show', '/', async (ctx) => {
     const validations = await ctx.orm.Validation.findAll({
       attributes: [
         ['request_id', 'request_id'], 
-        ['group_id', 'group_id'], 
-        ['seller', 'seller'], 
         ['valid', 'valid'],
       ],
     });
@@ -23,17 +21,12 @@ router.post('validation', '/', async (ctx) => {
     console.log('Datos recibidos:', ctx.request.body);
     const formattedData = ctx.request.body.formattedData;
 
-    if (formattedData.group_id == 20) {
-      const validation = await ctx.orm.Validation.create({
-        request_id: formattedData.request_id,
-        group_id: formattedData.group_id,
-        seller: formattedData.seller,
-        valid: formattedData.valid,
-      });			
-      console.log(validation);
-    }
-
-
+    const validation = await ctx.orm.Validation.create({
+      request_id: formattedData.request_id,
+      valid: formattedData.valid,
+    });			
+    console.log(validation);
+  
     // Envía una respuesta
     ctx.body = { message: 'Datos recibidos exitosamente' };
   } catch (error) {

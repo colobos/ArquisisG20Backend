@@ -42,7 +42,7 @@ router.post('webpay', '/request', async (ctx) => {
       user_id: ctx.request.body.user_id,
       amount: ctx.request.body.amount,
       request_id: request_id,
-      group_id: ctx.request.body.group_id,
+      group_id: ctx.request.body.numero_grupo,
       stocks_symbol: ctx.request.body.symbol,
       stocks_shortname: ctx.request.body.shortname,
       datetime: ctx.request.body.datetime,
@@ -57,7 +57,7 @@ router.post('webpay', '/request', async (ctx) => {
       user_id: ctx.request.body.user_id,
       amount: ctx.request.body.amount,
       request_id: request_id,
-      group_id: ctx.request.body.group_id,
+      group_id: ctx.request.body.numero_grupo,
       stocks_symbol: ctx.request.body.symbol,
       stocks_shortname: ctx.request.body.shortname,
       datetime: ctx.request.body.datetime,
@@ -110,14 +110,21 @@ router.post('webpay', '/validation', async (ctx) => {
   const ws_token  = ctx.request.body.token;
   let valid = false;
   let message = '';
+  console.log("yapiaaaaaaaaaaaaaaaaaaaa");
+  console.log("yapiaaaaaaaaaaaaaaaaaaaa");
+  console.log("yapiaaaaaaaaaaaaaaaaaaaa");
+  console.log("yapiaaaaaaaaaaaaaaaaaaaa");
+  console.log("yapiaaaaaaaaaaaaaaaaaaaa");
+  
 
   // Caso 1 - Tansacción anulada por el usuario
   if (!ws_token || ws_token == '') {
     console.log('token vacio o no encontrado');
-    ctx.body = {
-      message: 'Transaccion anulada por el usuario'
-    };
     valid = false;
+    ctx.body = {
+      message: 'Transaccion anulada por el usuario',
+      validation: valid
+    };
     const brokerMsg = {
       'request_id': purchaseData.request_id,
       'group_id': purchaseData.group_id,
@@ -140,7 +147,20 @@ router.post('webpay', '/validation', async (ctx) => {
 
   // Validamos la compra con la api de webpay
   const confirmedTx = await tx.commit(ws_token);
+  console.log("var1");
+  console.log("var1");
+  console.log("var1");
+  console.log("var1");
+  console.log("var1");
+  console.log("var1");
+  console.log("var1");
+  console.log("var1");
   console.log('confirmedTx:', confirmedTx);
+  console.log("var2");
+  console.log("var2");
+  console.log("var2");
+  console.log("var2");
+  console.log("var2");
 
   // Caso 2 - Tansacción rechazada
   if (confirmedTx.response_code != 0) { 
@@ -173,9 +193,7 @@ router.post('webpay', '/validation', async (ctx) => {
     await sendEmail(userEmail, 'Compra de acciones validada', msg);
 
   }
-
-
-
+  
   // Enviar validación a listener
   const brokerMsg = {
     'request_id': purchaseData.request_id,
