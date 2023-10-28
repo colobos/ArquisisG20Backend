@@ -7,48 +7,53 @@ const { WebpayPlus, Options, IntegrationCommerceCodes,
   IntegrationApiKeys, Environment } = require('transbank-sdk');
 
 
-router.get('purchase.show', '/perfildata/:userId', async (ctx) => {
-  try {
-
-    const historial = await ctx.orm.Purchase.findAll({
-      attributes: [
-        ['user_id', 'user_id'],
-        ['amount', 'amount'],
-        ['group_id', 'group_id'],
-        ['datetime', 'datetime'],
-        ['stocks_symbol', 'symbol'],
-        ['stocks_shortname', 'shortName'],
-        ['country', 'country'],
-        ['city', 'city'],
-        ['location', 'location'],
-        ['request_id', 'request_id']
-      ],
-      where: {
-        user_id: ctx.params.userId
-      }
-    });
-    console.log(historial);
-
-    const validations = await ctx.orm.Validation.findAll({
-      where: {
-        request_id: historial.map((item) => item.dataValues.request_id)
-      }
-    });
-    console.log(validations);
-    const historialWithValidations = historial.map((item) => {
-      const validation = validations.find((validation) => validation.request_id === item.dataValues.request_id);
-      return {
-        ...item.dataValues,
-      }
-    });
-    console.log(historialWithValidations);
-
-    ctx.body = historialWithValidations;
-  } catch (error) {
-    console.log(error);
-    ctx.throw(404);
-  }
-});
+  router.get('purchase.show', '/perfildata/:userId', async (ctx) => {
+    try {
+  
+      const historial = await ctx.orm.Purchase.findAll({
+        attributes: [
+          ['user_id', 'user_id'],
+          ['amount', 'amount'],
+          ['group_id', 'group_id'],
+          ['datetime', 'datetime'],
+          ['stocks_symbol', 'symbol'],
+          ['stocks_shortname', 'shortName'],
+          ['country', 'country'],
+          ['city', 'city'],
+          ['location', 'location'],
+          ['request_id', 'request_id']
+        ],
+        where: {
+          user_id: ctx.params.userId
+        }
+      });
+      console.log(historial);
+  
+      const validations = await ctx.orm.Validation.findAll({
+        where: {
+          request_id: historial.map((item) => item.dataValues.request_id)
+        }
+      });
+      console.log(validations);
+      const historialWithValidations = historial
+      .map((item) => {
+        const validation = validations.find((validation) => validation.request_id === item.dataValues.request_id);
+        if (validation && validation.valid === true) {
+          return {
+            ...item.dataValues,
+          };
+        }
+        return null; // Retorna null si no se cumple la condición
+      })
+      .filter((item) => item);
+      console.log(historialWithValidations);
+  
+      ctx.body = historialWithValidations;
+    } catch (error) {
+      console.log(error);
+      ctx.throw(404);
+    }
+  });
 
 function delay(ms) {
   return new Promise(resolve => {

@@ -125,14 +125,21 @@ router.post('webpay', '/validation', async (ctx) => {
       message: 'Transaccion anulada por el usuario',
       validation: valid
     };
+    const purchaseDataa = await ctx.orm.Purchase.findOne({
+      where: {
+        user_id: ctx.request.body.user_id,
+      },
+      order: [['createdAt', 'DESC']], // Ordena por el campo 'createdAt' en orden descendente
+    });
+
     const brokerMsg = {
-      'request_id': purchaseData.request_id,
-      'group_id': purchaseData.group_id,
+      'request_id': purchaseDataa.request_id,
+      'group_id': purchaseDataa.group_id,
       'seller': 0,
       'valid': valid
     };
   
-    // const responseMqtt = await axios.post(url, brokerMsg);
+    const responseMqtt = await axios.post(url, brokerMsg);
     console.log('responseMqtt without token:', responseMqtt);
     ctx.status = 200;
     return;
