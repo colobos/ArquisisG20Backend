@@ -29,4 +29,30 @@ VALUES (
   '2023-08-04'
 );
 
+CREATE TABLE Prediction (
+  "id" SERIAL PRIMARY KEY,
+  "user_id" VARCHAR(255),
+  "shortname" VARCHAR(255),
+  "symbol" VARCHAR(255),
+  "prediction_value" float,
+  "state" BOOLEAN,
+  "amount" int,
+  "time" int,
+  "precios" float[],
+  "dates" DATE[],
+  "datesimulation" DATE,
+  "created_at" TIMESTAMP,
+  "updated_at" TIMESTAMP
+);
+
+INSERT INTO Prediction ("user_id", "shortname", "symbol", "prediction_value", "state", "amount", "time", "precios", "dates", "datesimulation", "created_at", "updated_at")
+VALUES ('653db29818d81877fbb0590d', 'Empresa1', 'SYM1', 10.5, true, 100, 12, '{10.5, 11.2, 9.8}', '{2023-10-19, 2023-10-20, 2023-10-21}', '2023-10-19', NOW(), NOW());
+
+
+INSERT INTO Prediction ("user_id", "shortname", "symbol", "prediction_value", "state", "amount", "time", "precios", "dates", "datesimulation", "created_at", "updated_at")
+VALUES ('653db29818d81877fbb0590d', 'Empresa1', 'SYM1', 10.5, true, 100, 12, 
+'{10.5, 11.2, 9.8, 10.1, 12.0, 12.1, 8.5, 10.5, 10.5, 9.1, 7.1, 13.7}', 
+'{2023-10-19, 2023-10-20, 2023-10-21, 2023-10-22, 2023-10-23, 2023-10-24, 2023-10-25, 2023-10-26, 2023-10-27, 2023-10-28, 2023-10-29, 2023-10-30}', '2023-10-19', 
+NOW(), NOW());
+
 */
