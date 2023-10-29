@@ -6,6 +6,7 @@ router.get('prediction.show', '/:userId', async (ctx) => {
     console.log("holaaaaaa");
     const predictions = await ctx.orm.Prediction.findAll({
       attributes: [
+        ['id', 'id'], 
         ['user_id', 'user_id'], 
         ['shortname', 'shortname'], 
         ['symbol', 'symbol'], 
