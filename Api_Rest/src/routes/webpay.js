@@ -74,6 +74,7 @@ router.post('webpay', '/request', async (ctx) => {
 
     // response to front-end
     const WebpayData = {
+      user_id: ctx.request.body.user_id,
       url: response.url,
       token: response.token,
       purchaseData: purchaseData,
@@ -82,7 +83,7 @@ router.post('webpay', '/request', async (ctx) => {
     // send purchase data to listener
     const url = 'http://app_listener:8000/request'
     const bodytosendMqtt = {
-      'request_id': ctx.request.body.requestId,
+      'request_id': ctx.request.body.request_id,
       'group_id': '20',
       'symbol': ctx.request.body.symbol,
       'datetime': new Date().toISOString(),
