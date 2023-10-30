@@ -111,12 +111,6 @@ router.post('webpay', '/validation', async (ctx) => {
   const ws_token  = ctx.request.body.token;
   let valid = false;
   let message = '';
-  console.log("yapiaaaaaaaaaaaaaaaaaaaa");
-  console.log("yapiaaaaaaaaaaaaaaaaaaaa");
-  console.log("yapiaaaaaaaaaaaaaaaaaaaa");
-  console.log("yapiaaaaaaaaaaaaaaaaaaaa");
-  console.log("yapiaaaaaaaaaaaaaaaaaaaa");
-  
 
   // Caso 1 - Tansacción anulada por el usuario
   if (!ws_token || ws_token == '') {
@@ -155,20 +149,6 @@ router.post('webpay', '/validation', async (ctx) => {
 
   // Validamos la compra con la api de webpay
   const confirmedTx = await tx.commit(ws_token);
-  console.log("var1");
-  console.log("var1");
-  console.log("var1");
-  console.log("var1");
-  console.log("var1");
-  console.log("var1");
-  console.log("var1");
-  console.log("var1");
-  console.log('confirmedTx:', confirmedTx);
-  console.log("var2");
-  console.log("var2");
-  console.log("var2");
-  console.log("var2");
-  console.log("var2");
 
   // Caso 2 - Tansacción rechazada
   if (confirmedTx.response_code != 0) { 
@@ -191,15 +171,14 @@ router.post('webpay', '/validation', async (ctx) => {
 
 
   // Enviar validación de compra por email al user
-  if (valid) {
-    const authHeader = ctx.request.headers['authorization'];
-    const auth0Token = authHeader && authHeader.split(' ')[1];
-    const auth0UserData = await getAuth0Data(auth0Token);
-    const userEmail = auth0UserData.email;
-    console.log('userEmail:', userEmail);
+  if (valid && ctx.request.body.email) {
+    // const authHeader = ctx.request.headers['authorization'];
+    // const auth0Token = authHeader && authHeader.split(' ')[1];
+    // const auth0UserData = await getAuth0Data(auth0Token);
+    // const userEmail = auth0UserData.email;
+    console.log('userEmail:', ctx.request.body.email);
     const msg = `Su compra de ${purchaseData.stocks_symbol} se ha realizado con éxito. Puedes ver los detalles en el historial de acciones compradas.`
-    await sendEmail(userEmail, 'Compra de acciones validada', msg);
-
+    await sendEmail(ctx.request.body.email, 'Compra de acciones validada', msg);
   }
   
   // Enviar validación a listener
