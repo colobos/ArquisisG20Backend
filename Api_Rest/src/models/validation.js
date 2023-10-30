@@ -11,14 +11,19 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate() {
       // define association here
+      this.belongsTo(sequelize.models.Purchase, {
+        foreignKey: 'request_id',
+        targetKey: 'request_id',
+      });
     }
   }
 
   Validation.init({
     request_id: DataTypes.STRING,
-    group_id: DataTypes.STRING,
-    seller: DataTypes.FLOAT,
-    valid: DataTypes.BOOLEAN,
+    valid: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
   }, {
     sequelize,
     modelName: 'Validation',

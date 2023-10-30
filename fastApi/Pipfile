@@ -1,0 +1,29 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "*"
+uvicorn = {extras = ["standard"], version = "*"}
+celery = "*"
+redis = "*"
+sqlalchemy = "*"
+python-dotenv = "*"
+pydantic = "*"
+pydantic-settings = "*"
+pytz = "*"
+flower = "*"
+psycopg2-binary = "*"
+numpy = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
+python_full_version = "3.8.10"
+
+[scripts]
+start_jobMaster = "uvicorn jobMaster:app --host 0.0.0.0 --port 9000 --reload"
+start_workers = "celery -A workers worker -l INFO"
+start_flowers = "celery -A workers flower"

@@ -71,7 +71,7 @@ client.on('message', function (topic, message) {
         console.error('Error al enviar los datos a la API:', error);
       });
   } 
-  else if (topic === 'stocks/validation') {
+  else if (topic === 'stocks/validation' && parsedData.group_id != '20') {
     const formattedData = {
       request_id: parsedData.request_id,
       group_id: parsedData.group_id,
@@ -88,12 +88,45 @@ client.on('message', function (topic, message) {
         console.error('Error al enviar los datos a la API:', error);
       });
   }
+
+  else if (topic === 'stocks/requests' && parsedData.group_id != '20') {
+    const formattedData = {
+      request_id: parsedData.request_id,
+      group_id: parsedData.group_id,
+      symbol: parsedData.symbol,
+      datetime: parsedData.datetime,
+      deposit_token: parsedData.deposit_token,
+      quantity: parsedData.quantity,
+      seller: 0,
+    };
+    console.log(formattedData)
+
+    axios.post('http://app:3000/purchase', { formattedData })
+      .then(response => {
+        console.log('Respuesta de la API:', response.data);
+      })
+      .catch(error => {
+        console.error('Error al enviar los datos a la API:', error);
+      });
+  }
+
 })
 
 
 router.post('/request', async (ctx) => {
   try {
     client.publish('stocks/requests', JSON.stringify(ctx.request.body));;
+    ctx.response.body = { message: 'Solicitud procesada correctamente' };
+  } catch (error) {
+    ctx.response.status = 500;
+    ctx.response.body = { error: 'Error en la solicitud' };
+  }
+});
+
+router.post('/validation', async (ctx) => {
+  try {
+    console.log('body:', ctx.request.body);
+    client.publish('stocks/validation', JSON.stringify(ctx.request.body));;
     ctx.response.body = { message: 'Solicitud procesada correctamente' };
   } catch (error) {
     ctx.response.status = 500;

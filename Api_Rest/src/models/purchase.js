@@ -10,7 +10,10 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate() {
-      // define association here
+      this.hasOne(sequelize.models.Validation, {
+        foreignKey: 'request_id',
+        sourceKey: 'request_id',
+      });
     }
   }
 
@@ -24,6 +27,8 @@ module.exports = (sequelize, DataTypes) => {
     country: DataTypes.STRING,
     city: DataTypes.STRING,
     location: DataTypes.STRING,
+    request_id: DataTypes.STRING,
+    deposit_token: DataTypes.STRING,
   }, {
     sequelize,
     modelName: 'Purchase',
