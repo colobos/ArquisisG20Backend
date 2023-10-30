@@ -11,6 +11,7 @@ services: # The containers we are going to run
       - "3000:3000" # To expose the app to the machine localhost (machine-port:container:port)
     networks:
       - app-network # Connect the app to the network, in this case to use the database
+      - jobmaster-network
     depends_on: # Build dependencies in case one containers needs another to be builded first
       - db # To build after the database
     env_file:
@@ -44,9 +45,52 @@ services: # The containers we are going to run
     env_file:
       - .env
 
+  jobmaster:
+    build: 
+      context: ./fastApi/
+      dockerfile: Dockerfile
+    container_name: fastApi
+    command: pipenv run start_jobMaster
+    volumes:
+      - ./fastApi:/fastApi
+    ports:
+      - "9000:9000"
+    depends_on:
+      - redis
+    networks:
+      - redis-network
+      - jobmaster-network
+    env_file:
+      - .env
+          
+  celery:
+    build: 
+      context: ./fastApi/
+      dockerfile: Dockerfile
+    command: pipenv run start_workers
+    volumes:
+      - ./fastApi:/app
+    depends_on:
+      - redis
+      - db
+    networks:
+      - redis-network
+      - app-network
+    env_file:
+      - .env
+  
+  redis:
+    image: "redis:alpine"
+    networks:
+      - redis-network
+
 networks: # All the networks that connects our containers
   app-network:
     driver: bridge
+  jobmaster-network:
+    driver: bridge
+  redis-network:
+        driver: bridge
 
 volumes: # All the named volumes needed to persist data after container deletion
   db-volume:

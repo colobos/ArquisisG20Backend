@@ -29,7 +29,7 @@ router.post('webpay', '/request', async (ctx) => {
     console.log('last Price of the Stock:', price);
     console.log('Value:', value_to_pay);
 
-    const response = await tx.create('trx-id-grupo20', request_id, value_to_pay, process.env?.REDIRECT_URL || 'http://localhost:3001/purchase-completed');
+    const response = await tx.create('trx-id-grupo20', request_id, value_to_pay, process.env?.REDIRECT_URL || 'http://www.arquisis.me/purchase-completed');
     console.log('response:', response);
 
 

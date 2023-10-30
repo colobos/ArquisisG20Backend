@@ -1,5 +1,6 @@
 const Router = require('koa-router');
 const router = new Router();
+const axios = require('axios');
 
 router.get('prediction.show', '/:userId', async (ctx) => {
   try {
@@ -33,26 +34,26 @@ router.get('prediction.show', '/:userId', async (ctx) => {
 
 router.post('prediction.show', '/request', async (ctx) => {
   try {
-    const formattedData = ctx.request.body;
+    const data = {
+      user_id: ctx.request.body.user_id,
+      group_id: ctx.request.body.group_id,
+      symbol: ctx.request.body.symbol,
+      time: ctx.request.body.time,
+      amount: ctx.request.body.amount,
+      shortname: ctx.request.body.shortname
+    };
+
     console.log("Información");
 
-    /* 
-    Ejemplo de lo que entrega formattedData:
-      {
-        user_id: '653db29818d81877fbb0590d',
-        symbol: 'AMZN',
-        group_id: '72daf6d3-a30e-4dcb-97a9-922d8800cc6c',
-        amount: '777',
-        time: '777',
-        shortname: 'Amazon.com, Inc.'
-      }
+    axios.post('http://jobmaster:9000/job', data)
+    .then(response => {
+      console.log('Respuesta del jobMaster:', response.data);
+    })
+    .catch(error => {
+      console.error('Error al enviar los datos al jobMaster:', error);
+    });
 
-    */
-
-   /*Enviar información a Worker*/
-
-
-    console.log(formattedData);
+    console.log(data);
     ctx.body = { message: 'Predicción enviada exitosamente' };
 
   } catch (error) {
