@@ -2,7 +2,6 @@ const axios = require('axios');
 const Router = require('koa-router');
 const { getGeolocation } = require('../helpers/geolocation');
 const router = new Router();
-const uuid = require('uuid');
 const { WebpayPlus, Options, IntegrationCommerceCodes, 
   IntegrationApiKeys, Environment } = require('transbank-sdk');
 

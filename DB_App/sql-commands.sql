@@ -26,9 +26,9 @@ CREATE TABLE No_Admin_Purchase (
   user_id varchar(255),
   admin_id varchar(255),
   amount int,
-  group_id varchar(255),
   symbol varchar(255),
   shortName varchar(255),
+  price float,
   created_at DATE,
   updated_at DATE
 );
