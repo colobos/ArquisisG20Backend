@@ -17,10 +17,10 @@ module.exports = (sequelize, DataTypes) => {
   CustomerPurchase.init({
     user_id: DataTypes.STRING,
     admin_id: DataTypes.STRING,
-    amount: DataTypes.INTEGER,
+    amount: DataTypes.FLOAT,
     symbol: DataTypes.STRING,
     shortName: DataTypes.STRING,
-    price: DataTypes.INTEGER,
+    price: DataTypes.FLOAT,
     created_at: DataTypes.DATE,
     updated_at: DataTypes.DATE
   }, {

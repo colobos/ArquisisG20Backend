@@ -25,7 +25,7 @@ CREATE TABLE No_Admin_Purchase (
   id serial PRIMARY KEY,
   user_id varchar(255),
   admin_id varchar(255),
-  amount int,
+  amount float,
   symbol varchar(255),
   shortName varchar(255),
   price float,
