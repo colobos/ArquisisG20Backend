@@ -33,6 +33,4 @@ CREATE TABLE No_Admin_Purchase (
   updated_at DATE
 );
 
-
-
 */

@@ -13,7 +13,7 @@ const axios = require('axios');
 
 const host = process.env.HOST;
 const port = process.env.HOST_PORT;
-const topics = ['stocks/info', 'stocks/requests', 'stocks/validation'];
+const topics = ['stocks/requests', 'stocks/validation', 'stocks/auctions'];
 const url = `mqtt://${host}:${port}`;
 
 const options = {
@@ -51,6 +51,7 @@ client.on('message', function (topic, message) {
   console.log(`Mensaje recibido en el tópico: ${topic}`);
   const jsonData = message.toString();
   const parsedData = JSON.parse(jsonData);
+
   if (topic === 'stocks/info') {
     const formattedData = {
       stock: parsedData.stocks,
@@ -75,12 +76,33 @@ client.on('message', function (topic, message) {
     const formattedData = {
       request_id: parsedData.request_id,
       group_id: parsedData.group_id,
-      seller: 0,
+      seller: parsedData.seller,
       valid: parsedData.valid
     };
+
     console.log(formattedData)
 
     axios.post('http://app:3000/validation', { formattedData })
+      .then(response => {
+        console.log('Respuesta de la API:', response.data);
+      })
+      .catch(error => {
+        console.error('Error al enviar los datos a la API:', error);
+      });
+  } 
+  else if (topic == 'stocks/auctions') {
+    const formattedData = {
+      auction_id: parsedData.auction_id,
+      proposal_id: parsedData.proposal_id,
+      stock_id: parsedData.stock_id,
+      quantity: parsedData.quantity,
+      group_id: parsedData.group_id,
+      type: parsedData.type
+    };
+
+    console.log(formattedData)
+
+    axios.post('http://admin:5000/admin/auctions', { formattedData })
       .then(response => {
         console.log('Respuesta de la API:', response.data);
       })
@@ -111,6 +133,18 @@ router.post('/validation', async (ctx) => {
     ctx.response.body = { error: 'Error en la solicitud' };
   }
 });
+
+router.post('/auctions', async (ctx) => {
+  try {
+    console.log('body:', ctx.request.body);
+    client.publish('stocks/auctions', JSON.stringify(ctx.request.body));;
+    ctx.response.body = { message: 'Solicitud procesada correctamente' };
+  } catch (error) {
+    ctx.response.status = 500;
+    ctx.response.body = { error: 'Error en la solicitud' };
+  }
+});
+
 
 // Aplica el middleware de bodyParser
 app.use(bodyParser());
