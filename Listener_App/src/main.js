@@ -54,7 +54,7 @@ client.on('message', function (topic, message) {
   const parsedData = JSON.parse(jsonData);
   console.log(parsedData);
 
-  if (topic === 'stocks/info1') {
+  if (topic === 'stocks/info') {
     const formattedData = {
       stock: parsedData.stocks,
       stocks_id: parsedData.stocks_id,
@@ -75,7 +75,7 @@ client.on('message', function (topic, message) {
       });
   } 
 
-  else if (topic === 'stocks/validation1' && parsedData.group_id != '20') {
+  else if (topic === 'stocks/validation' && parsedData.group_id != '20') {
     const formattedData = {
       request_id: parsedData.request_id,
       group_id: parsedData.group_id,
@@ -123,9 +123,6 @@ client.on('message', function (topic, message) {
       group_id: parsedData.group_id,
       type: parsedData.type
     };
-
-    console.log(formattedData)
-    console.log("que yapaaaaaaaaaaaaaaaaaaaa")
 
     axios.post('http://admin:3000/admin/createProposal', { formattedData })
       .then(response => {
