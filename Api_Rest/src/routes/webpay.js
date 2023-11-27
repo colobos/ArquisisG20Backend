@@ -6,6 +6,7 @@ const { getGeolocation } = require('../helpers/geolocation');
 const uuid = require('uuid');
 const { getAuth0Data } = require('../helpers/getAuth0Data');
 const { sendEmail } = require('../helpers/sendEmail');
+const { checkAdminToken } = require('../helpers/checkAdminToken');
 
 
 router.post('webpay', '/request', async (ctx) => {
@@ -88,7 +89,7 @@ router.post('webpay', '/request', async (ctx) => {
       'datetime': new Date().toISOString(),
       'deposit_token': response.token,
       'quantity': parseFloat(ctx.request.body.amount),
-      'seller': 0
+      'seller': checkAdminToken('TOKEN') ? 20 : 0  // AQUI DEBE IR EL NUMERO DEL GRUPO SI ES ADMIN, PERO NO CACHÉ QUE TOKEN TOMAR
     };
     const responseMqtt = await axios.post(url, bodytosendMqtt)
 
@@ -173,8 +174,6 @@ router.post('webpay', '/validation', async (ctx) => {
     await sendEmail(userEmail, 'Compra de acciones validada', msg);
 
   }
-
-
 
   // Enviar validación a listener
   const brokerMsg = {
