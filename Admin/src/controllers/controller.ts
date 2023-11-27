@@ -3,9 +3,20 @@ import axios, { Axios, AxiosResponse } from 'axios';
 import { verifyIfAdminHaveEnoughAction, decreseActions, getActionsValues, getExchangesOfOneOffer, tryAcceptPropose,
          incrementActions, tryRejectPropose, createOfferExchange, getOffers } from '../utils/utils';
 import asyncLock from 'async-lock';
+const { Stock, Auction } = require("../../db/models");
 import { auction } from '../utils/interfaces';
 
 const lock = new asyncLock();
+
+interface AuctionData {
+    auction_id: string;
+    proposal_id: string;
+    stock_id: string;
+    quantity: number;
+    group_id: number;
+    type: string;
+  }
+
 
 export async function purchaseToAdmin (req: Request, res: Response, next: NextFunction){
     try {
@@ -227,3 +238,28 @@ export async function getExchangesPoposed (req: Request, res: Response, next: Ne
         res.status(500).send(msg);
     }
 }
+
+
+
+export async function createProposal(req: Request, res: Response) {
+    try {
+      console.log('Datos recibidos:', req.body);
+      console.log("vaaaar 1");
+      console.log("vaaaar 1");
+      console.log("vaaaar 1");
+      console.log("vaaaar 1");
+      console.log("vaaaar 1");
+      console.log("vaaaar 1");
+      console.log("vaaaar 1");
+      console.log("vaaaar 1");
+  
+      const requestData: any = req.body.formattedData; 
+
+      const customerPurchase = await Auction.create(requestData);
+  
+      res.status(200).json({ message: 'Datos recibidos exitosamente' });
+    } catch (error) {
+      console.error('Error en la ruta POST:', error);
+      res.status(500).json({ error: 'Error en el servidor' });
+    }
+  }

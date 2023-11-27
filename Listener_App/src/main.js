@@ -10,6 +10,7 @@ dotenv.config();
 
 const mqtt = require('mqtt');
 const axios = require('axios');
+const { parse } = require('uuid');
 
 const host = process.env.HOST;
 const port = process.env.HOST_PORT;
@@ -51,8 +52,9 @@ client.on('message', function (topic, message) {
   console.log(`Mensaje recibido en el tópico: ${topic}`);
   const jsonData = message.toString();
   const parsedData = JSON.parse(jsonData);
+  console.log(parsedData);
 
-  if (topic === 'stocks/info') {
+  if (topic === 'stocks/info1') {
     const formattedData = {
       stock: parsedData.stocks,
       stocks_id: parsedData.stocks_id,
@@ -72,14 +74,14 @@ client.on('message', function (topic, message) {
         console.error('Error al enviar los datos a la API:', error);
       });
   } 
-  else if (topic === 'stocks/validation') {
+
+  else if (topic === 'stocks/validation1' && parsedData.group_id != '20') {
     const formattedData = {
       request_id: parsedData.request_id,
       group_id: parsedData.group_id,
       seller: parsedData.seller,
       valid: parsedData.valid
     };
-
     console.log(formattedData)
 
     axios.post('http://app:3000/validation', { formattedData })
@@ -89,7 +91,29 @@ client.on('message', function (topic, message) {
       .catch(error => {
         console.error('Error al enviar los datos a la API:', error);
       });
-  } 
+  }
+
+  else if (topic === 'stocks/requests1' && parsedData.group_id != '20') {
+    const formattedData = {
+      request_id: parsedData.request_id,
+      group_id: parsedData.group_id,
+      symbol: parsedData.symbol,
+      datetime: parsedData.datetime,
+      deposit_token: parsedData.deposit_token,
+      quantity: parsedData.quantity,
+      seller: parsedData.seller,
+    };
+    console.log(formattedData)
+
+    axios.post('http://app:3000/purchase', { formattedData })
+      .then(response => {
+        console.log('Respuesta de la API:', response.data);
+      })
+      .catch(error => {
+        console.error('Error al enviar los datos a la API:', error);
+      });
+  }
+
   else if (topic == 'stocks/auctions') {
     const formattedData = {
       auction_id: parsedData.auction_id,
@@ -101,17 +125,18 @@ client.on('message', function (topic, message) {
     };
 
     console.log(formattedData)
+    console.log("que yapaaaaaaaaaaaaaaaaaaaa")
 
-    axios.post('http://admin:5000/admin/auctions', { formattedData })
+    axios.post('http://admin:3000/admin/createProposal', { formattedData })
       .then(response => {
         console.log('Respuesta de la API:', response.data);
+        console.log("Guardar subasta de venta grupo ajeno")
       })
       .catch(error => {
-        console.error('Error al enviar los datos a la API:', error);
+        console.error('Error al enviar los datos a la API Admin:', error);
       });
   }
 })
-
 
 router.post('/request', async (ctx) => {
   try {
