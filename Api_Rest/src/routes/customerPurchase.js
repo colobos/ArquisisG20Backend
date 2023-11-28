@@ -12,7 +12,6 @@ router.post('customer-purchase', '/', async (ctx) => {
   try {
     const customerPurchase = await ctx.orm.CustomerPurchase.create({
       user_id: ctx.request.body.user_id,
-      admin_id: ctx.request.body.admin_id,
       amount: ctx.request.body.amount,
       symbol: ctx.request.body.symbol,
       shortName: ctx.request.body.shortName,
@@ -38,7 +37,6 @@ router.get('customer-purchase.show', '/:userId', async (ctx) => {
     const customerPurchases = await ctx.orm.CustomerPurchase.findAll({
       attributes: [
         ['user_id', 'userId'],
-        ['admin_id', 'adminId'],
         ['amount', 'amount'],
         ['symbol', 'symbol'],
         ['shortName', 'shortName'],

@@ -3,7 +3,7 @@ import http from 'http';
 import express, { Express } from 'express';
 import morgan from 'morgan';
 import routes from './routes/index';
-// import { auth, cors } from './utils/rules';
+import { auth, cors } from './utils/rules';
 const orm = require('../db/models'); 
 const dotenv = require('dotenv');
 

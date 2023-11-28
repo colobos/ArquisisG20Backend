@@ -16,7 +16,6 @@ module.exports = (sequelize, DataTypes) => {
 
   CustomerPurchase.init({
     user_id: DataTypes.STRING,
-    admin_id: DataTypes.STRING,
     amount: DataTypes.FLOAT,
     symbol: DataTypes.STRING,
     shortName: DataTypes.STRING,

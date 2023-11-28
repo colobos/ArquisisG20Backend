@@ -25,7 +25,7 @@ services: # The containers we are going to run
     volumes:
       - ./Admin/src:/app/src # To copy changes in the local machine to the container.
     ports:
-      - "5000:3000" # To expose the app to the machine localhost (machine-port:container:port)
+      - "5001:3000" # To expose the app to the machine localhost (machine-port:container:port)
     networks:
       - admin-network # Connect the app to the network, in this case to use the database
     depends_on: # Build dependencies in case one containers needs another to be builded first
