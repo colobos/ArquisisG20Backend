@@ -73,7 +73,6 @@ client.on('message', function (topic, message) {
       .catch(error => {
         console.error('Error al enviar los datos a la API:', error);
       });
-  } 
 
   else if (topic === 'stocks/validation' && parsedData.group_id != '20') {
     const formattedData = {
@@ -91,7 +90,6 @@ client.on('message', function (topic, message) {
       .catch(error => {
         console.error('Error al enviar los datos a la API:', error);
       });
-  }
 
   else if (topic === 'stocks/requests' && parsedData.group_id != '20') {
     const formattedData = {

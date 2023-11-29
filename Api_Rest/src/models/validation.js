@@ -20,7 +20,10 @@ module.exports = (sequelize, DataTypes) => {
 
   Validation.init({
     request_id: DataTypes.STRING,
-    valid: DataTypes.BOOLEAN,
+    valid: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
   }, {
     sequelize,
     modelName: 'Validation',

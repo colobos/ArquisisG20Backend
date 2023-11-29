@@ -8,7 +8,6 @@ const { WebpayPlus, Options, IntegrationCommerceCodes,
     // Define tu configuración de axios aquí
   };
 
-  
   router.get('purchase.show', '/perfildata/:userId', async (ctx) => {
     try {
   
@@ -65,6 +64,37 @@ function delay(ms) {
 
 router.post('purchase', '/', async (ctx) => {
   try {
+    const formattedData = ctx.request.body.formattedData;
+    console.log(formattedData);
+    console.log(ctx.request)
+
+    const purchase = await ctx.orm.Purchase.create({
+      amount: formattedData.quantity,
+      request_id: formattedData.request_id,
+      group_id: formattedData.group_id,
+      stocks_symbol: formattedData.symbol,
+      stocks_shortname: formattedData.shortname,
+      datetime: formattedData.datetime,
+      deposit_token: formattedData.deposit_token,
+    });	
+
+    if (purchase) {
+      console.log('Purchase created successfully data:', purchase);
+    }
+
+    // Envía una respuesta
+    ctx.body = { message: 'Datos recibidos exitosamente' };
+  } catch (error) {
+    console.error('Error en la ruta POST:', error);
+    ctx.status = 500;
+    ctx.body = { error: 'Error en el servidor' };
+  }
+});
+
+/*
+
+router.post('purchase', '/', async (ctx) => {
+  try {
     const bodytosendMqtt = {
       'request_id': ctx.request.body.requestId,
       'group_id': '20',
@@ -99,6 +129,7 @@ router.post('purchase', '/', async (ctx) => {
     ctx.body = { error: error.message };
   }
 });
+*/
 
 
 

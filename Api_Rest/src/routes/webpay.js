@@ -30,7 +30,7 @@ router.post('webpay', '/request', async (ctx) => {
     console.log('last Price of the Stock:', price);
     console.log('Value:', value_to_pay);
 
-    const response = await tx.create('trx-id-grupo20', request_id, value_to_pay, process.env?.REDIRECT_URL || 'http://localhost:3001/purchase-completed');
+    const response = await tx.create('trx-id-grupo20', request_id, value_to_pay, process.env?.REDIRECT_URL || 'http://www.arquisis.me/purchase-completed');
     console.log('response:', response);
 
 
@@ -43,7 +43,7 @@ router.post('webpay', '/request', async (ctx) => {
       user_id: ctx.request.body.user_id,
       amount: ctx.request.body.amount,
       request_id: request_id,
-      group_id: ctx.request.body.group_id,
+      group_id: ctx.request.body.numero_grupo,
       stocks_symbol: ctx.request.body.symbol,
       stocks_shortname: ctx.request.body.shortname,
       datetime: ctx.request.body.datetime,
@@ -58,7 +58,7 @@ router.post('webpay', '/request', async (ctx) => {
       user_id: ctx.request.body.user_id,
       amount: ctx.request.body.amount,
       request_id: request_id,
-      group_id: ctx.request.body.group_id,
+      group_id: ctx.request.body.numero_grupo,
       stocks_symbol: ctx.request.body.symbol,
       stocks_shortname: ctx.request.body.shortname,
       datetime: ctx.request.body.datetime,
@@ -75,6 +75,7 @@ router.post('webpay', '/request', async (ctx) => {
 
     // response to front-end
     const WebpayData = {
+      user_id: ctx.request.body.user_id,
       url: response.url,
       token: response.token,
       purchaseData: purchaseData,
@@ -191,7 +192,7 @@ router.post('webpay', '/request_user_normal', async (ctx) => {
     // send purchase data to listener
     const url = 'http://app_listener:8000/request'
     const bodytosendMqtt = {
-      'request_id': ctx.request.body.requestId,
+      'request_id': ctx.request.body.request_id,
       'group_id': '20',
       'symbol': ctx.request.body.symbol,
       'datetime': new Date().toISOString(),
@@ -329,18 +330,26 @@ router.post('webpay', '/validation', async (ctx) => {
   // Caso 1 - Tansacción anulada por el usuario
   if (!ws_token || ws_token == '') {
     console.log('token vacio o no encontrado');
-    ctx.body = {
-      message: 'Transaccion anulada por el usuario'
-    };
     valid = false;
+    ctx.body = {
+      message: 'Transaccion anulada por el usuario',
+      validation: valid
+    };
+    const purchaseDataa = await ctx.orm.Purchase.findOne({
+      where: {
+        user_id: ctx.request.body.user_id,
+      },
+      order: [['createdAt', 'DESC']], // Ordena por el campo 'createdAt' en orden descendente
+    });
+
     const brokerMsg = {
-      'request_id': purchaseData.request_id,
-      'group_id': purchaseData.group_id,
+      'request_id': purchaseDataa.request_id,
+      'group_id': purchaseDataa.group_id,
       'seller': 0,
       'valid': valid
     };
   
-    // const responseMqtt = await axios.post(url, brokerMsg);
+    const responseMqtt = await axios.post(url, brokerMsg);
     console.log('responseMqtt without token:', responseMqtt);
     ctx.status = 200;
     return;
@@ -355,7 +364,6 @@ router.post('webpay', '/validation', async (ctx) => {
 
   // Validamos la compra con la api de webpay
   const confirmedTx = await tx.commit(ws_token);
-  console.log('confirmedTx:', confirmedTx);
 
   // Caso 2 - Tansacción rechazada
   if (confirmedTx.response_code != 0) { 
@@ -377,16 +385,14 @@ router.post('webpay', '/validation', async (ctx) => {
   });
 
   // Enviar validación de compra por email al user
-  if (valid) {
-    const authHeader = ctx.request.headers['authorization'];
-    const auth0Token = authHeader && authHeader.split(' ')[1];
-    const auth0UserData = await getAuth0Data(auth0Token);
-    const userEmail = auth0UserData.email;
-    console.log('userEmail:', userEmail);
+  if (valid && ctx.request.body.email) {
+    // const authHeader = ctx.request.headers['authorization'];
+    // const auth0Token = authHeader && authHeader.split(' ')[1];
+    // const auth0UserData = await getAuth0Data(auth0Token);
+    // const userEmail = auth0UserData.email;
+    console.log('userEmail:', ctx.request.body.email);
     const msg = `Su compra de ${purchaseData.stocks_symbol} se ha realizado con éxito. Puedes ver los detalles en el historial de acciones compradas.`
-    await sendEmail(userEmail, 'Compra de acciones validada', msg);
-
-  }
+    await sendEmail(ctx.request.body.email, 'Compra de acciones validada', msg);
 
   // Enviar validación a listener
   const brokerMsg = {
