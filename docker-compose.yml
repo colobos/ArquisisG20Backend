@@ -17,10 +17,38 @@ services: # The containers we are going to run
     env_file:
       - .env
       
+  admin:
+    build:
+      context: ./Admin # The path in the machine that have the files, in this case root
+      dockerfile: Dockerfile # The name of the Dockerfile definition
+    container_name: admin
+    restart: unless-stopped
+    volumes:
+      - ./Admin/src:/app/src # To copy changes in the local machine to the container.
+    ports:
+      - "5000:3000" # To expose the app to the machine localhost (machine-port:container:port)
+    networks:
+      - admin-network # Connect the app to the network, in this case to use the database
+    depends_on: # Build dependencies in case one containers needs another to be builded first
+      - admin_db
+    env_file:
+      - .env
+
+  admin_db: # The database service
+    image: postgres # Using the oficial dockerhub image
+    container_name: postgres_admin
+    networks:
+      - admin-network # Connect to the network to be used by other containers (ej: the web server)
+    env_file:
+      - .env
+    volumes:
+      # To persist the data in the database we have a volume that persist after container deletion
+      # and copy the files from the container to the volume.
+      - db-volume:/var/lib/postgresql/data 
 
   db: # The database service
     image: postgres # Using the oficial dockerhub image
-    container_name: postgres
+    container_name: postgres_app
     networks:
       - app-network # Connect to the network to be used by other containers (ej: the web server)
     env_file:
@@ -28,7 +56,7 @@ services: # The containers we are going to run
     volumes:
       # To persist the data in the database we have a volume that persist after container deletion
       # and copy the files from the container to the volume.
-      - db-volume:/var/lib/postgresql/data 
+      - db-volume-admin:/var/lib/postgresql/data 
 
   app_listener:
     build:
@@ -87,6 +115,8 @@ services: # The containers we are going to run
 networks: # All the networks that connects our containers
   app-network:
     driver: bridge
+  admin-network:
+    driver: bridge
   jobmaster-network:
     driver: bridge
   redis-network:
@@ -94,3 +124,4 @@ networks: # All the networks that connects our containers
 
 volumes: # All the named volumes needed to persist data after container deletion
   db-volume:
+  db-volume-admin:

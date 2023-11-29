@@ -17,6 +17,25 @@ CREATE TABLE Validation (
   "updated_at" TIMESTAMP
 );
 
+CREATE TABLE Admins (
+  id serial PRIMARY KEY,
+  user_id varchar(255), 
+  created_at DATE, 
+  updated_at DATE
+);
+
+CREATE TABLE No_Admin_Purchase (
+  id serial PRIMARY KEY,
+  user_id varchar(255),
+  admin_id varchar(255),
+  amount float,
+  symbol varchar(255),
+  shortName varchar(255),
+  price float,
+  created_at DATE,
+  updated_at DATE
+);
+
 INSERT INTO Purchase (user_id, amount, group_id, datetime, stocks_symbol, stocks_shortName, created_at, updated_at)
 VALUES (
   'a',
