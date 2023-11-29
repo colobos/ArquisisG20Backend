@@ -12,6 +12,7 @@ services: # The containers we are going to run
     networks:
       - app-network # Connect the app to the network, in this case to use the database
       - jobmaster-network
+      - admin-network
     depends_on: # Build dependencies in case one containers needs another to be builded first
       - db # To build after the database
     env_file:
@@ -29,6 +30,7 @@ services: # The containers we are going to run
       - "5000:3000" # To expose the app to the machine localhost (machine-port:container:port)
     networks:
       - admin-network # Connect the app to the network, in this case to use the database
+      - app-network   
     depends_on: # Build dependencies in case one containers needs another to be builded first
       - admin_db
     env_file:

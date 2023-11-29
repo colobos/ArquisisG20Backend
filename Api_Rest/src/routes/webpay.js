@@ -413,6 +413,6 @@ router.post('webpay', '/validation', async (ctx) => {
   ctx.status = 201;
 
   return;
-});
+}});
 
 module.exports = router;
