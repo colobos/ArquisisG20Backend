@@ -229,6 +229,22 @@ router.post('purchase', '/aceptar_rechazar', async (ctx) => {
   }
 });
 
+router.get('purchase', '/admin_ventas', async (ctx) => {
+  try {
+    const { auction_id } = ctx.params;
+    const url = `http://admin:3000/admin/getAdminActions`; 
+    const response = await axios.get(url, configaxios)
+    console.log("respuesta");
+    console.log(response.data)
+    ctx.body = response.data;
+
+  } catch (error) {
+    console.error('Error en la ruta POST:', error);
+    ctx.throw = 500;
+    ctx.body = { error: error.message };
+  }
+});
+
 
 
 
