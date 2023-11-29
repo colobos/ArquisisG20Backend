@@ -138,7 +138,7 @@ router.post('purchase', '/test', async (ctx) => {
     const body = {
       "auction_id": ctx.request.body.auction_id,
       'stock_id': ctx.request.body.symbol,
-      'group_id': '1',
+      'group_id': '20',
       'quantity': parseFloat(ctx.request.body.quantity),
     };
 
@@ -181,7 +181,7 @@ router.post('purchase', '/testproposal', async (ctx) => {
       "auction_id": ctx.request.body.auction_id,
       "proposal_id": ctx.request.body.proposal_id,
       'stock_id': ctx.request.body.symbol,
-      'group_id': '1',
+      'group_id': '20',
       'quantity': parseFloat(ctx.request.body.quantity),
     };
 
@@ -239,7 +239,7 @@ router.post('purchase', '/aceptar_rechazar', async (ctx) => {
       "auction_id": ctx.request.body.auction_id,
       "proposal_id": ctx.request.body.proposal_id,
       'stock_id': ctx.request.body.stock_id,
-      'group_id': '1',
+      'group_id': '20',
       'quantity': parseFloat(ctx.request.body.quantity),
       'type': ctx.request.body.type,
     };
