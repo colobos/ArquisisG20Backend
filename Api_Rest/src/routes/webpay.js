@@ -80,6 +80,16 @@ router.post('webpay', '/request', async (ctx) => {
       purchaseData: purchaseData,
     };
 
+    const bodytosendAdmin = {
+      'actionName': ctx.request.body.symbol,
+      'amount': parseFloat(ctx.request.body.amount),
+      'price': parseInt(price),
+      
+    };
+  
+    const url_admin = 'http://admin:3000/admin/purchaseHowAdmin' 
+    const responseAdmin = await axios.post(url_admin, bodytosendAdmin)
+
     // send purchase data to listener
     const url = 'http://app_listener:8000/request'
     const bodytosendMqtt = {
@@ -89,7 +99,7 @@ router.post('webpay', '/request', async (ctx) => {
       'datetime': new Date().toISOString(),
       'deposit_token': response.token,
       'quantity': parseFloat(ctx.request.body.amount),
-      'seller': checkAdminToken('TOKEN') ? 20 : 0  // AQUI DEBE IR EL NUMERO DEL GRUPO SI ES ADMIN, PERO NO CACHÉ QUE TOKEN TOMAR
+      'seller': 20 // AQUI DEBE IR EL NUMERO DEL GRUPO SI ES ADMIN, PERO NO CACHÉ QUE TOKEN TOMAR
     };
     const responseMqtt = await axios.post(url, bodytosendMqtt)
 
@@ -161,7 +171,6 @@ router.post('webpay', '/validation', async (ctx) => {
     request_id: purchaseData.request_id,
     valid: valid
   });
-
 
   // Enviar validación de compra por email al user
   if (valid) {

@@ -38,15 +38,15 @@ export async function decreseActions (actionName: string, amount: number) {
     });
 }
 
-export async function incrementActions (actionName: string, amount: number) {
-    await Stock.increment(
-        'amount',
-        {
-        by: amount,
-        where: {
-            name: actionName
-        }
+export async function incrementActions(actionName: string, amount: number, price: number) {
+    const [stock, created] = await Stock.findOrCreate({
+        where: { name: actionName },
+        defaults: { amount: amount, price: price }
     });
+
+    if (!created) {
+        await stock.increment('amount', { by: amount });
+    }
 }
 
 export async function getActionsValues () {
@@ -129,7 +129,7 @@ export async function  tryAcceptPropose (data: auction) {
 
             const proposal : auction = await getOneExchange(data.auction_id, data .proposal_id);
 
-            await incrementActions(proposal.stock_id, proposal.quantity);
+            await incrementActions(proposal.stock_id, proposal.quantity, 75);
             
             await updateOffer( proposal.proposal_id, 'acceptance' )
             return true;

@@ -45,11 +45,15 @@ export async function purchaseToAdmin (req: Request, res: Response, next: NextFu
 
 export async function purchaseHowAdmin (req: Request, res: Response, next: NextFunction){
     try {
+        console.log("check1")
+        console.log(req.body.actionName);
+        console.log(req.body.amount);
         await lock.acquire('resourceLock', async () => {
             let actionName = req.body.actionName;
             let amount = req.body.amount;
+            let price = req.body.price;
 
-            await incrementActions(actionName, amount);
+            await incrementActions(actionName, amount, price);
 
             return res.send('Acciones compradas correctamente');
         });
@@ -89,10 +93,10 @@ export async function proposeExchange (req: Request, res: Response, next: NextFu
                 "type": "proposal"
             }
         
-            // const responseMqtt: AxiosResponse = await axios.post(
-            //     'http://app_listener:8000/auctions' , 
-            //     propose
-            // );
+             const responseMqtt: AxiosResponse = await axios.post(
+                 'http://app_listener:8000/auctions' , 
+                 propose
+             );
             
             console.log( propose );
 
@@ -113,7 +117,6 @@ export async function proposeExchange (req: Request, res: Response, next: NextFu
 
 export async function resultExchange (req: Request, res: Response, next: NextFunction){
     try {
-
         let resultIsWorked : boolean = false;
 
         if (req.body.type == "acceptance") {
@@ -133,10 +136,10 @@ export async function resultExchange (req: Request, res: Response, next: NextFun
             "type": req.body.type
             }
         
-            // const responseMqtt: AxiosResponse = await axios.post(
-            //     'http://app_listener:8000/auctions' , 
-            //     result
-            // );
+             const responseMqtt: AxiosResponse = await axios.post(
+                 'http://app_listener:8000/auctions' , 
+                 result
+             );
             
             console.log( result );
 
@@ -158,7 +161,7 @@ export async function createExchange (req: Request, res: Response, next: NextFun
     try {
 
         const proposeIsPosible: boolean = await verifyIfAdminHaveEnoughAction(req.body.stock_id, req.body.quantity);
-
+        console.log(proposeIsPosible)
         if (proposeIsPosible) {
             const propose = {
                 "auction_id": req.body.auction_id,
@@ -169,11 +172,11 @@ export async function createExchange (req: Request, res: Response, next: NextFun
                 "type": "offer"
             }
         
-            // const responseMqtt: AxiosResponse = await axios.post(
-            //     'http://app_listener:8000/auctions' , 
-            //     propose
-            // );
-            
+             const responseMqtt: AxiosResponse = await axios.post(
+                 'http://app_listener:8000/auctions' , 
+                 propose
+             );
+
             console.log( propose );
 
             await createOfferExchange( propose );
@@ -210,6 +213,8 @@ export async function getExchangesOffersByOthers (req: Request, res: Response, n
 
 export async function getMyExchangesOffers (req: Request, res: Response, next: NextFunction){
     try {
+
+        console.log("ypaisima");
     
         const exchangesAviables : auction[] = await getOffers( true ); 
     
@@ -243,15 +248,20 @@ export async function getExchangesPoposed (req: Request, res: Response, next: Ne
 
 export async function createProposal(req: Request, res: Response) {
     try {
-      console.log('Datos recibidos:', req.body);
-      console.log("vaaaar 1");
-      console.log("vaaaar 1");
-      console.log("vaaaar 1");
-      console.log("vaaaar 1");
-      console.log("vaaaar 1");
-      console.log("vaaaar 1");
-      console.log("vaaaar 1");
-      console.log("vaaaar 1");
+      console.log('Datos recibidos:', req.body);  
+      const requestData: any = req.body.formattedData; 
+
+      const customerPurchase = await Auction.create(requestData);
+  
+      res.status(200).json({ message: 'Datos recibidos exitosamente' });
+    } catch (error) {
+      console.error('Error en la ruta POST:', error);
+      res.status(500).json({ error: 'Error en el servidor' });
+    }
+  }
+
+  export async function createOffer(req: Request, res: Response) {
+    try {
   
       const requestData: any = req.body.formattedData; 
 

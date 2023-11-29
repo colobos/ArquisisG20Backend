@@ -93,7 +93,7 @@ client.on('message', function (topic, message) {
       });
   }
 
-  else if (topic === 'stocks/requests1' && parsedData.group_id != '20') {
+  else if (topic === 'stocks/requests' && parsedData.group_id != '20') {
     const formattedData = {
       request_id: parsedData.request_id,
       group_id: parsedData.group_id,
